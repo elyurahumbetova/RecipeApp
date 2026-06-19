@@ -142,32 +142,35 @@ struct UploadView2: View {
     func uploadRecipe(ingredients: [String], steps: [String]) {
         let cleanIngredients = ingredients.filter { !$0.isEmpty }
         
+        guard let uid = Auth.auth().currentUser?.uid else {
+            print("❌ UID yoxdur")
+            return
+        }
+        
         var data: [String: Any] = [
             "title": foodName,
             "description": descriptionText,
             "cookingMinute": cookingDuration,
             "ingredients": cleanIngredients,
             "steps": steps,
-            "createdAt": Timestamp()
+            "createdAt": Timestamp(),
+            "userId": uid
         ]
         
-        guard let uid = Auth.auth().currentUser?.uid else {
-            print("❌ UID yoxdur")
-            return
-        }
+       
         
         let db = Firestore.firestore()
         
         let saveToFirestore = {
            
             let recipeRef = db.collection("recipes").document()
-            
             recipeRef.setData(data) { error in
                 guard error == nil else {
                     print("❌ Recipe yazma xətası:", error!)
                     return
                 }
                 print("✅ Recipe yazıldı, ID:", recipeRef.documentID)
+                
                 
                 // 2. Sonra createrecipes/{uid} ə ID-ni əlavə et
                 db.collection("createrecipes")

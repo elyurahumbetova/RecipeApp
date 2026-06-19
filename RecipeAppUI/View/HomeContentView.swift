@@ -4,7 +4,9 @@ struct HomeContentView: View {
     @State private var text = ""
     @State private var selectedDirection = "Left"
     @State private var selectedCategory = "All"
+    @State private var profiles: [String: UserModel] = [:]
     let categories = ["All", "Food", "Drink"]
+    
     let tabs = ["Left", "Right"]
     @State private var recipes: [RecipeModel] = []
     @State private var isLoading = false
@@ -70,9 +72,27 @@ struct HomeContentView: View {
                     
                 }else{
                     LazyVGrid(columns: columns,spacing: 16){
+                        
                         ForEach(filteredRecipes){ recipe in
-                            RecipeCardView(recipe: recipe)
-                                .clipped()
+                            let user = profiles[recipe.userId ?? ""]
+                            VStack(alignment: .leading,){
+                                HStack(spacing: 8){
+                                    AsyncImage(url: URL(string: user?.profileImage ?? "")) { image in
+                                                    image.resizable()
+                                                } placeholder: {
+                                                    Color.gray.opacity(0.3)
+                                                }
+                                                .frame(width: 40, height: 40)
+                                                .clipShape(Circle())
+
+                                                Text(user?.userName ?? "Unknown")
+                                                    .font(.p2)
+                                    
+                                }
+                                RecipeCardView(recipe: recipe)
+                                    .clipped()
+                            }
+                            
                         }
                     }
                     .padding(.horizontal,16)
@@ -86,17 +106,48 @@ struct HomeContentView: View {
 
             Spacer().frame(height: 80)
         }.clipped()
-        .task{
-            isLoading = true
-            recipes = (try? await fetchRecipes()) ?? []
-            isLoading = false
-        }
+            .task {
+                isLoading = true
+
+                async let recipesTask = fetchRecipes()
+                async let profilesTask: () = fetchProfiles()
+
+                recipes = (try? await recipesTask) ?? []
+                await profilesTask
+
+                isLoading = false
+            }
         .onReceive(NotificationCenter.default.publisher(for: .recipeUploaded)){_ in
             Task{
                 isLoading = true
                 recipes = (try? await fetchRecipes()) ?? []
                 isLoading = false 
             }
+        }
+    }
+    func fetchProfiles() async {
+        do {
+            let snapshot = try await Firestore.firestore()
+                .collection("profile")
+                .getDocuments()
+
+            var temp: [String: UserModel] = [:]
+
+            for doc in snapshot.documents {
+                let data = doc.data()
+
+                temp[doc.documentID] = UserModel(
+                    userName: data["username"] as? String ?? "",
+                    profileImage: data["profileImage"] as? String ?? ""
+                )
+            }
+
+            await MainActor.run {
+                profiles = temp
+            }
+
+        } catch {
+            print("❌ profile fetch error:", error)
         }
     }
    
@@ -110,7 +161,8 @@ struct HomeContentView: View {
         imageURL: "https://olo-images-live.imgix.net/cb/cbe0798e0b9e4bbbb7391c96da4d9010.jpg",
         ingredients: ["flour", "egg"],
         steps: ["Mix", "Cook"],
-        createdAt: Timestamp()
+        createdAt: Timestamp(),
+        userId: "sdknaldk"
     ))
     .frame(width: 180) // ← grid-dəki kimi dar et
     .padding()

@@ -93,7 +93,7 @@ struct ProfileView: View {
 
                             } else if !profileImageURL.isEmpty {
 
-                                AsyncImage(url: URL(string: profileImageURL)) { image in
+                                AsyncImage(url: URL(string: profileImageURL + "?v=\(UUID().uuidString)")) { image in
                                     image
                                         .resizable()
                                         .scaledToFill()
@@ -148,7 +148,8 @@ struct ProfileView: View {
                 let columns = [GridItem(.flexible()), GridItem(.flexible())]
                 
                 if isLoading {
-                    ProgressView().padding(.top, 40)
+                    ProgressView()
+                        .frame(maxWidth: .infinity, minHeight: 200)
                 } else if selectedTab == 0 {
                     if recipes.isEmpty {
                         VStack{
@@ -187,6 +188,7 @@ struct ProfileView: View {
                     }
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle("My Profile")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -327,7 +329,7 @@ struct ProfileView: View {
     func uploadProfileImage(_ image: UIImage) {
 
         guard let uid = Auth.auth().currentUser?.uid,
-              let imageData = image.jpegData(compressionQuality: 0.8)
+            let imageData = image.jpegData(compressionQuality: 0.8)
         else { return }
 
         Task {
@@ -335,7 +337,7 @@ struct ProfileView: View {
                 let fileName = "\(uid).jpg"
                 try await supabase.storage
                     .from("profiles")
-                    .upload(fileName, data: imageData)
+                    .upload(fileName, data: imageData, options: .init(upsert: true))
                 let publicImageUrl = try supabase.storage
                     .from("profiles")
                     .getPublicURL(path: fileName)
@@ -349,6 +351,7 @@ struct ProfileView: View {
                 await MainActor.run {
                     profileImageURL = publicImageUrl.absoluteString
                 }
+                await fetchUser()
             } catch {
                 print("❌ Upload error:", error)
             }
