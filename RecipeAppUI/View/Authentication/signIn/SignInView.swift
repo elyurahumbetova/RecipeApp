@@ -12,11 +12,7 @@ import FirebaseAuth
 struct SignIn: View {
     @Environment(NavigatorCoordinator.self) var coordinator
     @Environment(UserCoordinator.self) var userCoordinator
-    
-    @State private var email = ""
-    @State private var passwords = ""
-    @State private var errorMessage: String = ""
-  
+    @State private var viewModel = SignInViewModel()
     @AppStorage("appColorScheme") private var appColorScheme: String = "system"
     
     var body: some View {
@@ -31,10 +27,10 @@ struct SignIn: View {
                 .foregroundStyle(.appSecondaryText)
                 .padding(.bottom, 32)
             
-            AppTextField(type: .email, text: $email)
+            AppTextField(type: .email, text: $viewModel.email)
                 .padding(.bottom, 16)
                 .autocapitalization(.none)
-            AppTextField(type: .password, text: $passwords)
+            AppTextField(type: .password, text: $viewModel.passwords)
                 .padding(.bottom, 24)
             
             HStack {
@@ -46,14 +42,16 @@ struct SignIn: View {
             .padding(.bottom, 72)
             
             
-            if !errorMessage.isEmpty{
-                Text(errorMessage)
+            if !viewModel.errorMessage.isEmpty{
+                Text(viewModel.errorMessage)
                     .font(.caption)
                     .foregroundStyle(.red)
                     .multilineTextAlignment(.center)
             }
             AppButton(title: "Login", variant: .primaryFilled, size: .regular) {
-                login()
+                Task{
+                    await login()
+                }
 
             }
             
@@ -90,32 +88,18 @@ struct SignIn: View {
             }
         }
     }
-    // Login funksiyasında:
-    func login() {
-        Auth.auth().signIn(withEmail: email, password: passwords) { result, error in
-            
-            if let error = error {
-                DispatchQueue.main.async {
-                    self.errorMessage = error.localizedDescription
-                }
-                return
-            }
-            
-            guard let user = result?.user else { return }
-            
-            DispatchQueue.main.async {
-                self.userCoordinator.user = user
-                
-                if let savedTheme = UserDefaults.standard.string(
-                    forKey: "appColorScheme_\(user.uid)"
-                ) {
-                    self.appColorScheme = savedTheme
-                }
-                
-                self.coordinator.push(.home)
-            }
+    private func login() async{
+        guard let user = await viewModel.login() else {
+            return
         }
+        userCoordinator.user = user
+        
+        if let savedTheme = UserDefaults.standard.string(forKey: "appColorScheme_\(user.uid)"){
+            appColorScheme = savedTheme
+        }
+        coordinator.push(.home)
     }
+   
 }
 
 
