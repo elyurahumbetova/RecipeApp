@@ -1,0 +1,121 @@
+//
+//  ProfileViewModel.swift
+//  RecipeAppUI
+//
+//  Created by Elyura on 22.06.26.
+//
+
+import SwiftUI
+import FirebaseAuth
+import PhotosUI
+
+@Observable
+@MainActor
+
+class ProfileViewModel{
+    var recipes: [RecipeModel] = []
+    var likedRecipes: [RecipeModel] = []
+    var isLiked = false
+    var userName = ""
+    var email = ""
+    var profileImageURL = ""
+    var selectedImage: UIImage?
+    var isLoading = false
+    
+    private let userService = UserService()
+    private let recipeService = RecipeService()
+    private let storageService = StorageService()
+    
+    func loadInitialData() async{
+        isLoading = true
+        await fetchMyRecipes()
+        await fetchUser()
+        await fetchLikedRecipes()
+        isLoading = false
+    }
+    
+    
+    func fetchUser() async {
+        guard let uid = Auth.auth().currentUser?.uid else{return }
+        do{
+            let profile = try await userService.fetchProfile(uid: uid)
+            userName = profile.userName
+            email = profile.email
+            profileImageURL = profile.profileImageURL
+        }catch{
+            print(error)
+        }
+    }
+    func fetchMyRecipes() async{
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+                
+                do {
+                    let ids = try await recipeService.fetchRecipeIds(from: "createrecipes", uid: uid)
+                    guard !ids.isEmpty else{
+                        recipes = []
+                        return
+                    }
+                    recipes = try await recipeService.fetchRecipes(ids: ids)
+                }catch{
+                    print(error)
+                }
+    }
+    func fetchLikedRecipes() async{
+        guard let uid = Auth.auth().currentUser?.uid else{ return}
+        
+        do{
+            let ids = try await recipeService.fetchRecipeIds(from: "liked", uid: uid)
+            guard !ids.isEmpty else{
+                likedRecipes = []
+                return
+            }
+            likedRecipes = try await recipeService.fetchRecipes(ids: ids)
+        }catch{
+            print(error)
+        }
+        
+         
+    }
+    func handlePhotoSelection(_ item: PhotosPickerItem?) async{
+        guard let item,
+                let data = try? await item.loadTransferable(type: Data.self),
+                let uiImage = UIImage(data:data) else {return}
+        
+        await MainActor.run{
+            selectedImage = uiImage
+        }
+        await uploadProfileImage(uiImage)
+    }
+    
+    func uploadProfileImage(_ image: UIImage) async{
+        guard let uid = Auth.auth().currentUser?.uid else{return }
+        do{
+            let url = try await storageService.uploadProfileImage(uid: uid, image:image)
+            try await userService.updateProfileImage(uid: uid, url: url)
+            profileImageURL = url
+            await fetchUser()
+            } catch {
+                print(error)
+            }
+        }
+    
+    func deleteRecipe(_ recipe: RecipeModel) async {
+        guard let uid = Auth.auth().currentUser?.uid,
+              let recipeId = recipe.id else {
+            return
+        }
+
+        do {
+            try await recipeService.deleteRecipe(
+                recipeId: recipeId,
+                uid: uid
+            )
+
+            recipes.removeAll { $0.id == recipeId }
+
+        } catch {
+            print(error)
+        }
+    }
+    
+}
