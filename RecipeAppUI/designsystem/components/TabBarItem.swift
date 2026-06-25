@@ -12,8 +12,7 @@ struct TabBarItem: View {
     let label: String
     let tab: Tab
     @Binding var selectedTab: Tab
-    var action: (() -> Void)? = nil      // ✅ optional action
-
+    var action: (() -> Void)? = nil
     var isSelected: Bool {
         selectedTab == tab
     }
@@ -21,9 +20,9 @@ struct TabBarItem: View {
     var body: some View {
         Button {
             if let action {
-                action()                 // ✅ action varsa onu çağır
+                action()
             } else {
-                selectedTab = tab        // ✅ yoxdursa normal tab dəyiş
+                selectedTab = tab
             }
         } label: {
             VStack(spacing: 4) {

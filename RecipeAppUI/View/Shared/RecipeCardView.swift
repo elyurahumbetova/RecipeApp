@@ -1,6 +1,7 @@
 import SwiftUI
 import FirebaseFirestore
 import FirebaseAuth
+import Kingfisher
 
 struct RecipeCardView: View {
     let recipe: RecipeModel
@@ -18,23 +19,12 @@ struct RecipeCardView: View {
                         if let imageURL = recipe.imageURL,
                            let url = URL(string: imageURL) {
 
-                            AsyncImage(url: url) { phase in
-                                switch phase {
-                                case .success(let image):
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
-
-                                case .failure(_):
-                                    placeholderView
-
-                                case .empty:
-                                    placeholderView
-
-                                @unknown default:
+                            KFImage(url)
+                                .placeholder {
                                     placeholderView
                                 }
-                            }
+                                .resizable()
+                                .scaledToFill()
                         } else {
                             placeholderView
                         }

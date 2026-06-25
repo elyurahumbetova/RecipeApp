@@ -5,38 +5,25 @@ struct HomeView: View {
     @Environment(NavigatorCoordinator.self) var coordinator
     
     var body: some View {
-        VStack() {
-            
-            switch selectedTab {
-            case .home:
+        VStack {
+            ZStack {
                 HomeContentView()
-            case .upload:
-                UploadView()
-            case .profile:
+                    .opacity(selectedTab == .home ? 1:0)
+                    .zIndex(selectedTab == .home ? 1:0)
+                
                 ProfileView()
+                    .opacity(selectedTab == .profile ? 1:0)
+                    .zIndex(selectedTab == .profile ? 1:0)
             }
             
-            HStack{
+            HStack {
                 TabBarItem(icon: "house.fill", label: "Home", tab: .home, selectedTab: $selectedTab)
-                    
-                
-                TabBarItem(icon: "pencil", label: "Upload", tab: .upload, selectedTab: $selectedTab){
+                TabBarItem(icon: "pencil", label: "Upload", tab: .upload, selectedTab: $selectedTab) {
                     coordinator.push(.uploadView)
                 }
-                    
-                    
-                
-                TabBarItem(icon: "person",     label: "Profile",      tab: .profile,      selectedTab: $selectedTab)
-                    
-                
+                TabBarItem(icon: "person", label: "Profile", tab: .profile, selectedTab: $selectedTab)
             }
             .frame(maxWidth: .infinity)
-            
         }
-
     }
-}
-#Preview{
-    HomeView()
-        .environment(NavigatorCoordinator())
 }

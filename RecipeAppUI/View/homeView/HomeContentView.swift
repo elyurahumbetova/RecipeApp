@@ -1,5 +1,6 @@
 import SwiftUI
 import FirebaseFirestore
+import Kingfisher
 struct HomeContentView: View {
     @State private var text = ""
     @State private var selectedDirection = "Left"
@@ -77,13 +78,14 @@ struct HomeContentView: View {
                             let user = viewModel.profiles[recipe.userId ?? ""]
                             VStack(alignment: .leading,){
                                 HStack(spacing: 8){
-                                    AsyncImage(url: URL(string: user?.profileImage ?? "")) { image in
-                                        image.resizable()
-                                    } placeholder: {
-                                        Color.gray.opacity(0.3)
-                                    }
-                                    .frame(width: 40, height: 40)
-                                    .clipShape(Circle())
+                                    KFImage(URL(string: user?.profileImage ?? ""))
+                                        .placeholder {
+                                            Color.gray.opacity(0.3)
+                                        }
+                                        .resizable()
+                                        .scaledToFill()
+                                        .frame(width: 40, height: 40)
+                                        .clipShape(Circle())
                                     
                                     Text(user?.userName ?? "Unknown")
                                         .font(.p2)

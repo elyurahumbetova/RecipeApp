@@ -15,6 +15,7 @@ enum AppRoute {
     case uploadView
     case uploadView2(foodName: String, description: String, cookingDuration: Int, image: UIImage?)
     case settingView
+    case detailView1(RecipeModel)
 }
 
 extension AppRoute: Hashable {
@@ -25,17 +26,17 @@ extension AppRoute: Hashable {
         case (.signIn, .signIn): return true
         case (.signUp, .signUp): return true
         case (.home, .home): return true
-        case(.settingView, .settingView): return true
+        case (.settingView, .settingView): return true
         case (.uploadView, .uploadView): return true
         case (.uploadView2(let a, let b, let c, _), .uploadView2(let d, let e, let f, _)):
             return a == d && b == e && c == f
-        default: return false
-        }
+        case (.detailView1(let r1), .detailView1(let r2)):
+               return r1.id == r2.id
+           default: return false        }
     }
 
     func hash(into hasher: inout Hasher) {
         switch self {
-        case .settingView: hasher.combine(7)
         case .splash: hasher.combine(0)
         case .onBoarding: hasher.combine(1)
         case .signIn: hasher.combine(2)
@@ -47,6 +48,10 @@ extension AppRoute: Hashable {
             hasher.combine(name)
             hasher.combine(desc)
             hasher.combine(mins)
+        case .settingView: hasher.combine(7)
+        case .detailView1(let recipe):
+            hasher.combine(8)
+            hasher.combine(recipe.id)
         }
     }
 }

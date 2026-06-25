@@ -6,13 +6,23 @@
 //
 
 import SwiftUI
-
-struct DetailViewMOdel: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+@Observable
+@MainActor
+class DetailViewModel{
+    var isLoading = false
+    var user: UserModel?
+    
+    private let userService = UserService()
+    
+    func fetchUser(userId: String ) async{
+        isLoading = true
+        
+        do{
+            user = try await userService.fetchUser(by: userId)
+            
+        }catch{
+            print(error)
+        }
+        isLoading = false
     }
-}
-
-#Preview {
-    DetailViewMOdel()
 }

@@ -1,5 +1,6 @@
 import SwiftUI
 import PhotosUI
+import Kingfisher
 
 struct StatItem: View {
     let value: Int
@@ -77,15 +78,15 @@ struct ProfileView: View {
                                     .clipShape(Circle())
                                 
                             } else if !viewModel.profileImageURL.isEmpty {
+                               
                                 
-                                AsyncImage(url: URL(string: viewModel.profileImageURL)) { image in
-                                    image
-                                        .resizable()
-                                        .scaledToFill()
-                                } placeholder: {
-                                    ProgressView()
-                                }
-                                .clipShape(Circle())
+                                KFImage(URL(string: viewModel.profileImageURL))
+                                    .placeholder{
+                                        ProgressView()
+                                    }
+                                    .resizable()
+                                    .scaledToFill()
+                                    .clipShape(Circle())
                                 
                             } else {
                                 
@@ -187,6 +188,16 @@ struct ProfileView: View {
                                 .onTapGesture{
                                     coordinator.push(.detailView1(recipe))
                                 }
+                                .contextMenu{
+                                    Button(role: .destructive){
+                                        Task{
+                                            await viewModel.deleteRecipe(recipe)
+                                        }
+                                        } label: {
+                                            Label("Delete",systemImage: "trash")
+                                        }
+                                    }
+                                }
                             
                         }
                     }
@@ -194,7 +205,7 @@ struct ProfileView: View {
                 }
             }
         }
-    }
+    
     
     
     

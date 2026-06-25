@@ -14,6 +14,7 @@ struct AppTextField: View {
     @FocusState private var isFocused: Bool
     @State private var isPasswordVisible: Bool = false
 
+    var axis : Axis = .horizontal
     private var placeholder: String {
         switch type {
         case .email:             return "Email address"
@@ -59,7 +60,7 @@ struct AppTextField: View {
                 if case .password = type, !isPasswordVisible {
                     SecureField(placeholder, text: $text)
                 } else {
-                    TextField(placeholder, text: $text)
+                    TextField(placeholder, text: $text,axis : axis)
                         .keyboardType(type == .email ? .emailAddress : .default)
                         .autocorrectionDisabled()
                         .textInputAutocapitalization(type == .email ? .never : .sentences)

@@ -12,20 +12,18 @@
 //  Created by Elyura on 20.06.26.
 //
 
-import SwiftUI
-import FirebaseFirestore
 
 
 import SwiftUI
 import FirebaseFirestore
+import Kingfisher
 
 struct DetailView1: View {
     let recipe: RecipeModel
     
     @State private var dragOffset: CGFloat = .zero
     @State private var isExpanded: Bool = false
-    @State private var user: UserModel?
-    
+    @State private var viewModel = DetailViewModel()
     var body: some View {
         GeometryReader { geometry in
             let imageHeight = geometry.size.height / 2.5
@@ -33,15 +31,15 @@ struct DetailView1: View {
             let expandedOffset: CGFloat = 60
             
             ZStack(alignment: .top) {
-                AsyncImage(url: URL(string: recipe.imageURL ?? "")) { image in
-                    image
-                        .resizable()
-                        .scaledToFill()
-                } placeholder: {
-                    Color.gray.opacity(0.3)
-                }
-                .frame(width: geometry.size.width, height: imageHeight)
-                .clipped()
+                KFImage(URL(string: recipe.imageURL ?? ""))
+                    .placeholder{
+                        Color.gray.opacity(0.3)
+                    }
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: geometry.size.width, height: imageHeight)
+                    .clipped()
+                
                 
                 VStack(alignment: .leading, spacing: 12) {
                     HStack {
@@ -64,17 +62,16 @@ struct DetailView1: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
                     HStack {
-                        AsyncImage(url: URL(string: user?.profileImage ?? "")) { image in
-                            image
-                                .resizable()
-                                .scaledToFill()
-                        } placeholder: {
-                            Color.gray.opacity(0.3)
-                        }
-                        .frame(width: 40, height: 40)
-                        .clipShape(Circle())
+                        KFImage(URL(string: recipe.imageURL ?? ""))
+                            .placeholder{
+                                Color.gray.opacity(0.3)
+                            }
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 40,height: 40)
+                            .clipShape(Circle())
                         
-                        Text(user?.userName ?? "Unknown")
+                        Text(viewModel.user?.userName ?? "Unknown")
                             .font(.h3)
                             .foregroundStyle(.appMainText)
                     }
@@ -169,21 +166,11 @@ struct DetailView1: View {
         }
         .ignoresSafeArea(edges: .top)
         .task{
-            await fetchUser()
+            guard let userId = recipe.userId else{ return }
+            await viewModel.fetchUser(userId: userId)
         }
     }
-    func fetchUser() async {
-           guard let userId = recipe.userId else { return }
-           do {
-               let doc = try await Firestore.firestore()
-                   .collection("profile")
-                   .document(userId)
-                   .getDocument()
-               self.user = try doc.data(as: UserModel.self)
-           } catch {
-               print("🔴 user fetch error:", error)
-           }
-       }
+    
 }
 
 //

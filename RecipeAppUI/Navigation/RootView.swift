@@ -49,6 +49,9 @@ extension AppRoute {
                 cookingDuration: cookingDuration,
                 coverImage: image
             )
+        case .detailView1(let recipe, ):
+            DetailView1(recipe: recipe)
+        
         }
     }
 }
