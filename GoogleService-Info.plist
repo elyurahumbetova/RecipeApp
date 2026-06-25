@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>API_KEY</key>
-	<string>AIzaSyCTB9ucpFcJZf1qd0Tg91RV5Hlv-ejFwjk</string>
+	<string>your_key</string>
 	<key>GCM_SENDER_ID</key>
-	<string>855931421387</string>
+	<string>your_gcm_sender_id</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
@@ -13,7 +13,7 @@
 	<key>PROJECT_ID</key>
 	<string>recipeapp-e11c9</string>
 	<key>STORAGE_BUCKET</key>
-	<string>recipeapp-e11c9.firebasestorage.app</string>
+	<string>your_storage_bucket</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:855931421387:ios:5baf46b006f72d2999114e</string>
+	<string>your_app_id</string>
 </dict>
 </plist>
