@@ -6,6 +6,7 @@
 //
 
 import FirebaseFirestore
+
 struct RecipeService{
     private let db = Firestore.firestore()
     private let fieldKey = "recipes"
@@ -32,6 +33,7 @@ struct RecipeService{
     func fetchAllRecipes() async throws -> [RecipeModel] {
         let snapshot = try await db
             .collection("recipes")
+            .order(by: "createdAt",descending: true)
             .getDocuments()
 
         return snapshot.documents.compactMap { doc in

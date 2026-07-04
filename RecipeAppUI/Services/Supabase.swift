@@ -8,7 +8,21 @@
 import Foundation
 import Supabase
 
-let supabase = SupabaseClient(
-  supabaseURL: URL(string: Bundle.main.object(forInfoDictionaryKey: "SUPABASE_URL") as? String ?? "")!,
-  supabaseKey: Bundle.main.object(forInfoDictionaryKey: "SUPABASE_KEY") as? String ?? "",
-)
+func makeSupabaseClient() -> SupabaseClient {
+    let supabaseURLString = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_URL") as? String ?? "MISSING_URL"
+    let supabaseKeyString = Bundle.main.object(forInfoDictionaryKey: "SUPABASE_KEY") as? String ?? "MISSING_KEY"
+
+    print("🔍 SUPABASE_URL:", supabaseURLString)
+    print("🔍 SUPABASE_KEY:", supabaseKeyString)
+
+    guard let supabaseURL = URL(string: supabaseURLString) else {
+        fatalError("❌ Invalid URL from Info.plist: \(supabaseURLString)")
+    }
+
+    return SupabaseClient(
+        supabaseURL: supabaseURL,
+        supabaseKey: supabaseKeyString
+    )
+}
+
+let supabase = makeSupabaseClient()

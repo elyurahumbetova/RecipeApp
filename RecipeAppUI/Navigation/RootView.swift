@@ -42,13 +42,7 @@ extension AppRoute {
         case .signUp: SignUp()
         case .home: HomeView()
         case .uploadView: UploadView()
-        case .uploadView2(let foodName, let description, let cookingDuration, let image):
-            UploadView2(
-                foodName: foodName,
-                descriptionText: description,
-                cookingDuration: cookingDuration,
-                coverImage: image
-            )
+        
         case .detailView1(let recipe, ):
             DetailView1(recipe: recipe)
         

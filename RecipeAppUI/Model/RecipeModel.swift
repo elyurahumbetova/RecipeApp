@@ -7,7 +7,8 @@
 
 import Foundation
 import FirebaseFirestore
-struct RecipeModel: Identifiable, Codable {
+
+struct RecipeModel: Identifiable, Codable, Hashable {
     @DocumentID var id: String?
     let title: String
     let description: String
