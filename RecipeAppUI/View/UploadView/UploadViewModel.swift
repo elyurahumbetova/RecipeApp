@@ -50,6 +50,62 @@ class UploadViewModel{
         }
     }
 
+    
+    
+    @discardableResult
+    func addIngredient() -> Int{
+        var newIndex = 0
+        withAnimation(.easeInOut(duration: 0.25)){
+            ingredients.append("")
+            newIndex = ingredients.count - 1
+        }
+        return newIndex
+    }
+    
+    @discardableResult
+    func addSteps() -> Int{
+        var newIndex = 0
+        withAnimation(.easeInOut(duration: 0.25)){
+            
+            
+            steps.append("")
+            newIndex = steps.count - 1
+        }
+        return newIndex 
+    }
+    
+    func removeIngredient(at index: Int){
+        guard ingredients.count > 1,ingredients.indices.contains(index) else{
+            return
+        }
+        
+        ingredients.remove(at: index)
+    }
+    
+    func removeStep(at index: Int) {
+        guard steps.count > 1 , steps.indices.contains(index) else{
+            return
+        }
+        
+        steps.remove(at: index)
+    }
+    
+    
+    func nextIngredientFocus(after index: Int) -> Int{
+        if index == ingredients.count - 1{
+            return addIngredient()
+        }else{
+           return index + 1
+        }
+    }
+    
+    func nextStepFocus(after index: Int) -> Int{
+        if index == steps.count - 1{
+            return addSteps()
+        }else{
+            return index + 1 
+        }
+    }
     @MainActor
     func uploadRecipe() async {
         guard let uid = Auth.auth().currentUser?.uid else {

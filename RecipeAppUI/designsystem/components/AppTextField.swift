@@ -32,7 +32,7 @@ struct AppTextField: View {
     }
 
     private var borderColor: Color {
-        isFocused || !text.isEmpty ? Color(.appPrimary) : Color(.appOutline)
+        isFocused ? Color(.appPrimary) : Color(.appOutline)
     }
 
     private var trailingIcon: String? {

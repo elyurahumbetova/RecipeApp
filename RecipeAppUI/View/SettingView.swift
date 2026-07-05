@@ -69,8 +69,8 @@ struct SettingView: View {
             Button("Log Out", role: .destructive) {
                 do{
                     try Auth.auth().signOut()
-                    // əvvəlki temaı user ID-yə bağlı saxla
-                           let userId = userCoordinator.user?.uid ?? ""
+
+                    let userId = userCoordinator.user?.uid ?? ""
                            UserDefaults.standard.set(appColorScheme, forKey: "appColorScheme_\(userId)")
                     appColorScheme = "system"
                     userCoordinator.user = nil
