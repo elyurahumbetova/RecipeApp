@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SearchField: View {
     @Binding var text: String
-    @State private var placeHolder = "Search"
+    @State private var placeHolder = LocalizedStringKey("Search")
         
     @FocusState private var isFocused: Bool
     

@@ -15,11 +15,11 @@ struct AppTextField: View {
     @State private var isPasswordVisible: Bool = false
 
     var axis : Axis = .horizontal
-    private var placeholder: String {
+    private var placeholder: LocalizedStringKey {
         switch type {
         case .email:             return "Email address"
         case .password:          return "Password"
-        case .other(let ph, _):  return ph
+        case .other(let ph, _):  return LocalizedStringKey(ph)
         }
     }
 
@@ -55,7 +55,6 @@ struct AppTextField: View {
                     .frame(width: 24)
             }
           
-            // Text input
             Group {
                 if case .password = type, !isPasswordVisible {
                     SecureField(placeholder, text: $text)

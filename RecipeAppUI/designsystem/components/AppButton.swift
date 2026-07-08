@@ -14,7 +14,7 @@ enum ButtonSize{
 }
 
 struct AppButton: View {
-    let title: String
+    let title: LocalizedStringKey
     let variant: ButtonVariant
     let size: ButtonSize
     var icon: String? = nil

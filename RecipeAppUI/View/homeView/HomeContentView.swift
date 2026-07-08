@@ -3,14 +3,11 @@ import FirebaseFirestore
 import Kingfisher
 struct HomeContentView: View {
     @State private var text = ""
-    @State private var selectedDirection = "Left"
     @State private var selectedCategory = "All"
     @State private var viewModel = HomeViewModel()
     @Environment(NavigatorCoordinator.self) private var coordinator
     let categories = ["All", "Food", "Drink"]
-    
-    let tabs = ["Left", "Right"]
-    
+        
     
     var filteredRecipes: [RecipeModel]
     {
@@ -26,7 +23,7 @@ struct HomeContentView: View {
                     .foregroundStyle(.appMainText)
                 HStack(spacing: 16) {
                     ForEach(categories, id: \.self) { cat in
-                        AppButton(title: cat, variant: selectedCategory == cat ? .primaryFilled : .secondaryTextFilled, size: .small) {
+                        AppButton(title: LocalizedStringKey(cat), variant: selectedCategory == cat ? .primaryFilled : .secondaryTextFilled, size: .small) {
                             selectedCategory = cat
                         }
                     }
@@ -38,27 +35,7 @@ struct HomeContentView: View {
                 .fill(.appForm)
                 .frame(height: 5)
 
-            VStack {
-                HStack {
-                    ForEach(tabs, id: \.self) { tab in
-                        Button {
-                            selectedDirection = tab
-                        } label: {
-                            VStack {
-                                Text(tab)
-                                    .frame(maxWidth: .infinity)
-                                    .frame(height: 37)
-                                    .foregroundStyle(
-                                        selectedDirection == tab ? .appMainText : .appOutline
-                                    )
-                                Rectangle()
-                                    .fill(selectedDirection == tab ? .appPrimary : Color.clear)
-                                    .frame(height: 3)
-                                    .frame(maxWidth: .infinity)
-                            }
-                        }
-                    }
-                }
+            
                 let columns = [
                     GridItem(.flexible()),
                     GridItem(.flexible())
@@ -105,11 +82,6 @@ struct HomeContentView: View {
                     .padding(.vertical,16)
 
                 }
-                
-                
-                
-            }
-
             Spacer().frame(height: 80)
         }
         .clipped()
@@ -123,8 +95,8 @@ struct HomeContentView: View {
         }
     }
     
-   
 }
+
 #Preview {
     RecipeCardView(recipe: RecipeModel(
         id: "1",

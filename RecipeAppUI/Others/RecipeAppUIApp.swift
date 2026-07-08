@@ -10,6 +10,7 @@ import FirebaseCore
 
 @main
 struct RecipeAppUIApp: App {
+    @State private var localization = LocalizedManager.shared
     init() {
             URLCache.shared = URLCache(
                 memoryCapacity: 50 * 1024 * 1024,
@@ -22,6 +23,9 @@ struct RecipeAppUIApp: App {
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environment(localization)
+                .environment(\.locale, Locale(identifier: localization.currentLang))
+                .id(localization.currentLang)
         }
     }
 }

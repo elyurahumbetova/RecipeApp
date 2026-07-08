@@ -5,8 +5,16 @@ struct SettingView: View {
     @Environment(UserCoordinator.self) var userCoordinator
     @AppStorage("appColorScheme") private var appColorScheme: String = "system"
     
-    @State private var showLogoutAlert = false
+    @State private var viewModel = SettingViewModel()
+    @Environment(LocalizedManager.self) private var localization
+    
+    private let languages:[(code: String,name: String)] = [
+        ("az", "Azərbaycan"),
+        ("en", "English"),
+        ("ru", "Русский"),
+        ("tr", "Turkce")
 
+    ]
     var body: some View {
         List {
             
@@ -41,9 +49,24 @@ struct SettingView: View {
                 Text("Appearance")
             }
 
+            Section{
+                ForEach(languages, id: \.code){language in
+                    AppearanceRow(
+                        icon: "globe",
+                        iconColor: .blue,
+                        title: LocalizedStringKey(language.name),
+                        isSelected: localization.currentLang == language.code )
+                    {
+                        localization.currentLang = language.code
+                    }
+                }
+            }header: {
+                Text("Language")
+            }
+            
             Section {
                 Button {
-                    showLogoutAlert = true
+                    viewModel.requestLogout()
                 } label: {
                     HStack(spacing: 14) {
                         ZStack {
@@ -65,22 +88,16 @@ struct SettingView: View {
         }
         .navigationTitle("Settings")
         .navigationBarTitleDisplayMode(.inline)
-        .alert("Log Out", isPresented: $showLogoutAlert) {
+        .alert("Log Out", isPresented: $viewModel.showLogoutAlert) {
             Button("Log Out", role: .destructive) {
-                do{
-                    try Auth.auth().signOut()
-
-                    let userId = userCoordinator.user?.uid ?? ""
-                           UserDefaults.standard.set(appColorScheme, forKey: "appColorScheme_\(userId)")
-                    appColorScheme = "system"
-                    userCoordinator.user = nil
-                    coordinator.setRoot(.signIn)
-                }
-                catch{
-                    print("Logout Error: \(error)")
-                }
+                appColorScheme = viewModel.logout(
+                    currentColorScheme: appColorScheme,
+                    userCoordinator: userCoordinator,
+                    coordinator: coordinator)
             }
-            Button("Cancel", role: .cancel) {}
+            Button("Cancel", role: .cancel) {
+                viewModel.cancelLogout()
+            }
         } message: {
             Text("Are you sure you want to log out?")
         }
@@ -91,7 +108,7 @@ struct SettingView: View {
 struct AppearanceRow: View {
     let icon: String
     let iconColor: Color
-    let title: String
+    let title: LocalizedStringKey
     let isSelected: Bool
     let action: () -> Void
 
@@ -123,7 +140,7 @@ struct AppearanceRow: View {
     }
 }
 
-#Preview {
-    SettingView()
-        .environment(NavigatorCoordinator())
-}
+//#Preview {
+//    SettingView()
+//        .environment(NavigatorCoordinator())
+//}

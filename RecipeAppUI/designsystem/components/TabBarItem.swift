@@ -29,7 +29,7 @@ struct TabBarItem: View {
                 Image(systemName: icon)
                     .font(.system(size: 20, weight: .bold))
                     .foregroundStyle(isSelected ? .appPrimary : .appOutline)
-                Text(label)
+                Text(LocalizedStringKey(label))
                     .font(.s)
                     .foregroundStyle(isSelected ? .appPrimary : .appOutline)
             }

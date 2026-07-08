@@ -19,6 +19,7 @@
 		1E468C982FF80A6D0098B6C2 /* UploadStep1View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E468C972FF80A6D0098B6C2 /* UploadStep1View.swift */; };
 		1E468C9A2FF80D200098B6C2 /* SuccessSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E468C992FF80D200098B6C2 /* SuccessSheet.swift */; };
 		1E468C9E2FF95D110098B6C2 /* BottomView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E468C9D2FF95D110098B6C2 /* BottomView.swift */; };
+		1E468CA02FFD31170098B6C2 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 1E468C9F2FFD31170098B6C2 /* Localizable.xcstrings */; };
 		1E7A779D2FE68D1F00EE8C38 /* DetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7A779C2FE68D1F00EE8C38 /* DetailView.swift */; };
 		1E7A77A12FE9639A00EE8C38 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7A77A02FE9639A00EE8C38 /* ProfileViewModel.swift */; };
 		1E7A77A42FE964CB00EE8C38 /* RecipeService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E7A77A32FE964CB00EE8C38 /* RecipeService.swift */; };
@@ -46,7 +47,6 @@
 		1EABB3142F7A73BE00BE67B2 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 1EABB3132F7A73BE00BE67B2 /* Lottie */; };
 		1EABB3172F7EAAC800BE67B2 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 1EABB3162F7EAAC800BE67B2 /* FirebaseFirestore */; };
 		1EABB3192F7EAAD500BE67B2 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 1EABB3182F7EAAD500BE67B2 /* FirebaseStorage */; };
-		1EABB31D2F94B67D00BE67B2 /* SettingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1EABB31C2F94B67D00BE67B2 /* SettingView.swift */; };
 		1ECF65B32F646CB000892B06 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECF65B02F646CB000892B06 /* SignInView.swift */; };
 		1ECF65B62F646CB000892B06 /* OnBoardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECF65AE2F646CB000892B06 /* OnBoardingView.swift */; };
 		1ECF65B92F65A6E100892B06 /* AppTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1ECF65B82F65A6E100892B06 /* AppTextField.swift */; };
@@ -73,6 +73,7 @@
 		1E468C972FF80A6D0098B6C2 /* UploadStep1View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadStep1View.swift; sourceTree = "<group>"; };
 		1E468C992FF80D200098B6C2 /* SuccessSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SuccessSheet.swift; sourceTree = "<group>"; };
 		1E468C9D2FF95D110098B6C2 /* BottomView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BottomView.swift; sourceTree = "<group>"; };
+		1E468C9F2FFD31170098B6C2 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		1E7A779C2FE68D1F00EE8C38 /* DetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailView.swift; sourceTree = "<group>"; };
 		1E7A77A02FE9639A00EE8C38 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		1E7A77A32FE964CB00EE8C38 /* RecipeService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipeService.swift; sourceTree = "<group>"; };
@@ -94,7 +95,6 @@
 		1EABB30A2F756BB500BE67B2 /* UploadStep2View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadStep2View.swift; sourceTree = "<group>"; };
 		1EABB30E2F78FC7500BE67B2 /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
 		1EABB3102F7A6F0300BE67B2 /* IngredientDropDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IngredientDropDelegate.swift; sourceTree = "<group>"; };
-		1EABB31C2F94B67D00BE67B2 /* SettingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingView.swift; sourceTree = "<group>"; };
 		1ECF65AE2F646CB000892B06 /* OnBoardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnBoardingView.swift; sourceTree = "<group>"; };
 		1ECF65B02F646CB000892B06 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		1ECF65B82F65A6E100892B06 /* AppTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTextField.swift; sourceTree = "<group>"; };
@@ -111,6 +111,11 @@
 		1E468C952FF6ACA90098B6C2 /* Others */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = Others;
+			sourceTree = "<group>";
+		};
+		1E468CA32FFD367F0098B6C2 /* Settings */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Settings;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -261,6 +266,7 @@
 		1EABB2E72F6EC71400BE67B2 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				1E468CA32FFD367F0098B6C2 /* Settings */,
 				1ECF65C52F6C6C7100892B06 /* HomeView.swift */,
 				1E40D3C62FEBF61800A78A91 /* Shared */,
 				1EABB3072F756B5A00BE67B2 /* UploadView */,
@@ -270,7 +276,6 @@
 				1EABB30D2F78FC6F00BE67B2 /* Splash */,
 				1EABB2F62F6FFF1300BE67B2 /* Authentication */,
 				1ECF65AE2F646CB000892B06 /* OnBoardingView.swift */,
-				1EABB31C2F94B67D00BE67B2 /* SettingView.swift */,
 				1EABB3102F7A6F0300BE67B2 /* IngredientDropDelegate.swift */,
 			);
 			path = View;
@@ -333,6 +338,7 @@
 				1EABB2E72F6EC71400BE67B2 /* View */,
 				1ECF65BE2F6C55C900892B06 /* Navigation */,
 				1E95D8E92F5F36E3001760FE /* designsystem */,
+				1E468C9F2FFD31170098B6C2 /* Localizable.xcstrings */,
 			);
 			path = RecipeAppUI;
 			sourceTree = "<group>";
@@ -363,6 +369,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				1E468C952FF6ACA90098B6C2 /* Others */,
+				1E468CA32FFD367F0098B6C2 /* Settings */,
 			);
 			name = RecipeAppUI;
 			packageProductDependencies = (
@@ -401,6 +408,9 @@
 			knownRegions = (
 				en,
 				Base,
+				tr,
+				ru,
+				az,
 			);
 			mainGroup = 1E95D8CB2F5F1834001760FE;
 			minimizedProjectReferenceProxies = 1;
@@ -426,6 +436,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1E40D3CC2FED97D400A78A91 /* Config.xcconfig in Resources */,
+				1E468CA02FFD31170098B6C2 /* Localizable.xcstrings in Resources */,
 				1EABB2EA2F6FE6D400BE67B2 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -442,7 +453,6 @@
 				1EABB30F2F78FC7800BE67B2 /* SplashView.swift in Sources */,
 				1ECF65B32F646CB000892B06 /* SignInView.swift in Sources */,
 				1EABB3002F752C8B00BE67B2 /* Tabs.swift in Sources */,
-				1EABB31D2F94B67D00BE67B2 /* SettingView.swift in Sources */,
 				1E7A779D2FE68D1F00EE8C38 /* DetailView.swift in Sources */,
 				1E2041792FDD800D006F64F3 /* RecipeModel.swift in Sources */,
 				1EABB3062F75331200BE67B2 /* HomeContentView.swift in Sources */,
@@ -543,6 +553,7 @@
 				SUPABASE_KEY = "";
 				SUPABASE_URL = "";
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -600,6 +611,7 @@
 				SUPABASE_KEY = "";
 				SUPABASE_URL = "";
 				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 			};
 			name = Release;
 		};

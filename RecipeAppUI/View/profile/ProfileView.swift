@@ -4,7 +4,7 @@ import Kingfisher
 
 struct StatItem: View {
     let value: Int
-    let label: String
+    let label: LocalizedStringKey
     var body: some View {
         VStack(spacing: 2) {
             Text(value.formatted(.number))
@@ -23,7 +23,7 @@ struct StatItem: View {
 struct ProfileTabPicker: View {
     
     @Binding var selected: Int
-    let tabs = ["Recipes", "Liked"]
+    let tabs: [LocalizedStringKey] = ["Recipes", "Liked"]
 
     var body: some View {
         HStack(spacing: 0) {
@@ -113,11 +113,11 @@ struct ProfileView: View {
                 
                 
                 HStack {
-                    StatItem(value: 32,   label: "Recipes")
+                    StatItem(value: 32,   label: LocalizedStringKey("Recipes"))
                     Rectangle().fill(Color(.systemGray4)).frame(width: 1, height: 36)
-                    StatItem(value: 782,  label: "Following")
+                    StatItem(value: 782,  label: LocalizedStringKey("Following"))
                     Rectangle().fill(Color(.systemGray4)).frame(width: 1, height: 36)
-                    StatItem(value: 1287, label: "Followers")
+                    StatItem(value: 1287, label: LocalizedStringKey("Followers"))
                 }
                 .padding(.horizontal, 16)
                 .padding(.top, 12)
@@ -132,9 +132,9 @@ struct ProfileView: View {
                     ProgressView()
                         .frame(maxWidth: .infinity, minHeight: 200)
                 } else if selectedTab == 0 {
-                    recipeGrid(recipes: viewModel.recipes, empthyText: "No recipes yet")
+                    recipeGrid(recipes: viewModel.recipes, empthyText: LocalizedStringKey("No recipes yet"))
                 } else {
-                    recipeGrid(recipes: viewModel.likedRecipes, empthyText: "No liked recipes yet")
+                    recipeGrid(recipes: viewModel.likedRecipes, empthyText: LocalizedStringKey("No liked recipes yet"))
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
@@ -170,7 +170,7 @@ struct ProfileView: View {
         
     }
     @ViewBuilder
-    private func recipeGrid(recipes: [RecipeModel], empthyText: String) -> some View{
+    private func recipeGrid(recipes: [RecipeModel], empthyText: LocalizedStringKey) -> some View{
         if recipes.isEmpty{
             VStack{
                 Spacer()
