@@ -62,6 +62,10 @@ struct ProfileView: View {
     @State private var viewModel = ProfileViewModel()
     @State private var selectedTab = 0
     @State private var selectedItem: PhotosPickerItem?
+    
+    @State private var showProfileHeader = true
+    @State private var lastOffset: CGFloat = 0
+
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
     @State private var localization = LocalizedManager.shared
 
@@ -70,65 +74,21 @@ struct ProfileView: View {
     var body: some View {
         NavigationView {
             ScrollView{
+                GeometryReader{ geo in
+                    Color.clear
+                        .onChange(of: geo.frame(in: .named("scroll")).minY) { _, newValue in
+                            withAnimation(.easeInOut(duration: 0.2)){
+                                showProfileHeader = newValue > lastOffset
+                            }
+                            lastOffset = newValue
+                        }
+                }
+                .frame(height: 0)
                 VStack(spacing: 0) {
-                    VStack(spacing: 8) {
-                        PhotosPicker(selection: $selectedItem, matching: .images) {
-                            ZStack {
-                                Circle().fill(.appForm)
-                                if let image = viewModel.selectedImage {
-                                    
-                                    Image(uiImage: image)
-                                        .resizable()
-                                        .scaledToFill()
-                                        .clipShape(Circle())
-                                    
-                                } else if !viewModel.profileImageURL.isEmpty {
-                                    
-                                    
-                                    KFImage(URL(string: viewModel.profileImageURL))
-                                        .placeholder{
-                                            ProgressView()
-                                        }
-                                        .resizable()
-                                        .scaledToFill()
-                                        .clipShape(Circle())
-                                    
-                                } else {
-                                    
-                                    Image(systemName: "person.crop.circle.fill")
-                                        .resizable()
-                                        .scaledToFit()
-                                        .foregroundColor(.appSecondaryText)
-                                }
-                            }
-                        }
-                        .frame(width: 90, height: 90)
-                        .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 4)
-                        .onChange(of: selectedItem) { _, newItem in
-                            Task {
-                                await viewModel.handlePhotoSelection(newItem)
-                            }
-                        }
-                        
-                        Text(viewModel.userName.isEmpty ? localization.t("Loading...") : viewModel.userName)
-                            .font(.h2)
-                            .foregroundColor(.appMainText)
+                    if showProfileHeader{
+                        profileHeader
                     }
-                    .padding(.top, 8)
-                    
-                    
-                    HStack {
-                        StatItem(value: 32,   label: localization.t("Recipes"));
-                        Rectangle().fill(Color(.systemGray4)).frame(width: 1, height: 36);
-                        StatItem(value: 782,  label: localization.t("Following"));
-                        Rectangle().fill(Color(.systemGray4)).frame(width: 1, height: 36);
-                        StatItem(value: 1287, label: localization.t("Followers"))
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.top, 12)
-                    
-                    
-                    ProfileTabPicker(selected: $selectedTab)
+                   ProfileTabPicker(selected: $selectedTab)
                         .padding(.top, 12)
                     
                     
@@ -143,6 +103,7 @@ struct ProfileView: View {
                     }
                 }
             }
+            .coordinateSpace(name: "scroll")
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle(localization.t("My Profile"))
             .navigationBarTitleDisplayMode(.inline)
@@ -173,6 +134,66 @@ struct ProfileView: View {
                 }
             }
         }
+        
+    }
+    private var profileHeader: some View{
+        VStack(spacing: 8) {
+            PhotosPicker(selection: $selectedItem, matching: .images) {
+                ZStack {
+                    Circle().fill(.appForm)
+                    if let image = viewModel.selectedImage {
+                        
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .clipShape(Circle())
+                        
+                    } else if !viewModel.profileImageURL.isEmpty {
+                        
+                        
+                        KFImage(URL(string: viewModel.profileImageURL))
+                            .placeholder{
+                                ProgressView()
+                            }
+                            .resizable()
+                            .scaledToFill()
+                            .clipShape(Circle())
+                        
+                    } else {
+                        
+                        Image(systemName: "person.crop.circle.fill")
+                            .resizable()
+                            .scaledToFit()
+                            .foregroundColor(.appSecondaryText)
+                    }
+                }
+            }
+            .frame(width: 90, height: 90)
+            .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 4)
+            .onChange(of: selectedItem) { _, newItem in
+                Task {
+                    await viewModel.handlePhotoSelection(newItem)
+                }
+            }
+            
+            Text(viewModel.userName.isEmpty ? localization.t("Loading...") : viewModel.userName)
+                .font(.h2)
+                .foregroundColor(.appMainText)
+            
+            HStack {
+                StatItem(value: 32,   label: localization.t("Recipes"));
+                Rectangle().fill(Color(.systemGray4)).frame(width: 1, height: 36);
+                StatItem(value: 782,  label: localization.t("Following"));
+                Rectangle().fill(Color(.systemGray4)).frame(width: 1, height: 36);
+                StatItem(value: 1287, label: localization.t("Followers"))
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 12)
+        }
+        .padding(.top, 8)
+        .transition(.move(edge: .top).combined(with: .opacity))
+        
+        
         
     }
     @ViewBuilder
