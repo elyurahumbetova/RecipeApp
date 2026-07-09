@@ -10,6 +10,8 @@ import PhotosUI
 
 struct UploadStep1View: View {
     @Bindable var viewModel: UploadViewModel
+    @State private var localization = LocalizedManager.shared
+
 
     var body: some View {
         VStack {
@@ -28,11 +30,11 @@ struct UploadStep1View: View {
                                 VStack {
                                     Image("CoverImage")
                                         .padding(.bottom, 21)
-                                    Text("Add cover photo")
+                                    Text(localization.t("Add cover photo"))
                                         .font(.h3)
                                         .foregroundStyle(.appMainText)
                                         .padding(.bottom, 8)
-                                    Text("(up to 120 Mb)")
+                                    Text(localization.t("(up to 120 Mb)"))
                                         .font(.s)
                                         .foregroundStyle(.appSecondaryText)
                                         .padding(.bottom, 16)
@@ -56,16 +58,16 @@ struct UploadStep1View: View {
         .padding(.horizontal, 24)
 
         VStack(alignment: .leading, spacing: 10) {
-            Text("Food")
+            Text(localization.t("Food"))
                 .font(.h2)
                 .foregroundStyle(.appMainText)
-            AppTextField(type: .other(placeholder: "Enter food name", leadingIcon: nil), text: $viewModel.foodName)
+            AppTextField(type: .other(placeholder: localization.t("Enter food name"), leadingIcon: nil), text: $viewModel.foodName)
 
-            Text("Description")
+            Text(localization.t("Description"))
                 .font(.h2)
                 .foregroundStyle(.appMainText)
                 .padding(.top,14)
-            TextField("Tell a little about your food", text: $viewModel.descriptionText, axis: .vertical)
+            TextField(localization.t("Tell a little about your food"), text: $viewModel.descriptionText, axis: .vertical)
                 .lineLimit(3...5)
                 .padding()
                 .background(
@@ -74,11 +76,11 @@ struct UploadStep1View: View {
                 )
 
             HStack(alignment: .firstTextBaseline) {
-                Text("Cooking Durantion")
+                Text(localization.t("Cooking Durantion"))
                     .font(.h2)
                     .foregroundStyle(.appMainText)
                     .padding(.top,14)
-                Text("(in minutes)")
+                Text(localization.t("(in minutes)"))
                     .font(.p1)
                     .foregroundStyle(.appSecondaryText)
             }

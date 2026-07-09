@@ -20,10 +20,16 @@ import Kingfisher
 
 struct DetailView1: View {
     let recipe: RecipeModel
-    
+    @State private var localization = LocalizedManager.shared
+
+   
     @State private var dragOffset: CGFloat = .zero
     @State private var isExpanded: Bool = false
     @State private var viewModel = DetailViewModel()
+    private var cookingText: String {
+        localization.t("Food {count} mins")
+            .replacingOccurrences(of: "{count}", with: "\(recipe.cookingMinute)")
+    }
     var body: some View {
         GeometryReader { geometry in
             let imageHeight = geometry.size.height / 2.5
@@ -56,11 +62,10 @@ struct DetailView1: View {
                         .foregroundStyle(.appMainText)
                         .frame(maxWidth: .infinity, alignment: .leading)
                     
-                    Text("Food    \(recipe.cookingMinute) mins")
+                    Text(cookingText)
                         .font(.p2)
                         .foregroundStyle(.appSecondaryText)
                         .frame(maxWidth: .infinity, alignment: .leading)
-                    
                     HStack {
                         KFImage(URL(string: recipe.imageURL ?? ""))
                             .placeholder{
@@ -71,7 +76,7 @@ struct DetailView1: View {
                             .frame(width: 40,height: 40)
                             .clipShape(Circle())
                         
-                        Text(viewModel.user?.userName ?? "Unknown")
+                        Text(viewModel.user?.userName ?? localization.t("Unknown"))
                             .font(.h3)
                             .foregroundStyle(.appMainText)
                     }
@@ -79,7 +84,7 @@ struct DetailView1: View {
                     
                     Divider().padding(.bottom, 16)
                     
-                    Text("Description")
+                    Text(localization.t("Description"))
                         .font(.h2)
                         .foregroundStyle(.appMainText)
                         .padding(.bottom, 8)
@@ -89,7 +94,7 @@ struct DetailView1: View {
                     
                     Divider().padding(.bottom, 16)
                     
-                    Text("Ingredients")
+                    Text(localization.t("Ingredients"))
                         .font(.h2)
                         .foregroundStyle(.appMainText)
                     
@@ -111,7 +116,7 @@ struct DetailView1: View {
                     
                     Divider().padding(.bottom, 16)
                     
-                    Text("Steps")
+                    Text(localization.t("Steps"))
                         .font(.h2)
                         .foregroundStyle(.appMainText)
                     

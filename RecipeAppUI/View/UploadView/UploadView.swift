@@ -3,10 +3,12 @@ import SwiftUI
 struct UploadView: View {
     @Environment(NavigatorCoordinator.self) var coordinator
     @State private var viewModel = UploadViewModel()
+    @State private var localization = LocalizedManager.shared
+
     var body: some View {
         VStack{
             HStack{
-                Button("Cancel",role: .destructive ){
+                Button(localization.t("Cancel"),role: .destructive ){
                     coordinator.setRoot(.home)
                 }
                 .font(.h2)
@@ -40,10 +42,10 @@ struct UploadView: View {
 
         }
         .navigationBarBackButtonHidden(true)
-        .alert("Image required",isPresented: $viewModel.showAlert){
+        .alert(localization.t("Image required"),isPresented: $viewModel.showAlert){
             Button("Ok",role: .cancel){}
         }message:{
-            Text("Pls upload a recipe image before continuing to next step")
+            Text(localization.t("Pls upload a recipe image before continuing to next step"))
         }
         .sheet(isPresented: $viewModel.showSuccess){
             SuccessSheetView{

@@ -3,6 +3,8 @@ import SwiftUI
 struct HomeView: View {
     @State private var selectedTab: Tab = .home
     @Environment(NavigatorCoordinator.self) var coordinator
+    @State private var localization = LocalizedManager.shared
+
     
     var body: some View {
         VStack {
@@ -17,11 +19,11 @@ struct HomeView: View {
             }
             
             HStack {
-                TabBarItem(icon: "house.fill", label: "Home", tab: .home, selectedTab: $selectedTab)
-                TabBarItem(icon: "pencil", label: "Upload", tab: .upload, selectedTab: $selectedTab) {
+                TabBarItem(icon: "house.fill", label: localization.t("Home"), tab: .home, selectedTab: $selectedTab)
+                TabBarItem(icon: "pencil", label: localization.t("Upload"), tab: .upload, selectedTab: $selectedTab) {
                     coordinator.push(.uploadView)
                 }
-                TabBarItem(icon: "person", label: "Profile", tab: .profile, selectedTab: $selectedTab)
+                TabBarItem(icon: "person", label: localization.t("Profile"), tab: .profile, selectedTab: $selectedTab)
             }
             .frame(maxWidth: .infinity)
         }

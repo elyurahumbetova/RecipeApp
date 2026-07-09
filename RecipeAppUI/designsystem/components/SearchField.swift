@@ -9,7 +9,8 @@ import SwiftUI
 
 struct SearchField: View {
     @Binding var text: String
-    @State private var placeHolder = LocalizedStringKey("Search")
+    @State private var localization = LocalizedManager.shared
+
         
     @FocusState private var isFocused: Bool
     
@@ -19,7 +20,7 @@ struct SearchField: View {
             Image(systemName: "magnifyingglass")
                 .foregroundStyle(.appSecondaryText)
                 .padding(.leading, 16)
-            TextField(placeHolder, text: $text)
+            TextField(localization.t("Search"), text: $text)
                 .focused($isFocused)
                 .padding(19)
                 

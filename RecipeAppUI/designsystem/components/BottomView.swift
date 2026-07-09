@@ -9,18 +9,20 @@ import SwiftUI
 
 struct BottomView: View {
     @Bindable var viewModel: UploadViewModel
+    @State private var localization = LocalizedManager.shared
+
     var body: some View {
         Group{
             if viewModel.currentStep == 1 {
-                AppButton(title: "Next", variant: .primaryFilled, size: .regular) {
+                AppButton(title: localization.t("Next"), variant: .primaryFilled, size: .regular) {
                     viewModel.goToStep2()
                 }
             }else{
                 HStack(spacing: 15) {
-                    AppButton(title: "Back", variant: .secondaryTextFilled, size: .small) {
+                    AppButton(title: localization.t("Back"), variant: .secondaryTextFilled, size: .small) {
                         viewModel.goToStep1()
                     }
-                    AppButton(title: "Next", variant: .primaryFilled, size: .small) {
+                    AppButton(title: localization.t("Next"), variant: .primaryFilled, size: .small) {
                         Task {
                             await viewModel.uploadRecipe()
                         }

@@ -7,6 +7,8 @@ struct HomeContentView: View {
     @State private var viewModel = HomeViewModel()
     @Environment(NavigatorCoordinator.self) private var coordinator
     let categories = ["All", "Food", "Drink"]
+    @State private var localization = LocalizedManager.shared
+
         
     
     var filteredRecipes: [RecipeModel]
@@ -18,12 +20,12 @@ struct HomeContentView: View {
         ScrollView {
             VStack(alignment: .leading) {
                 SearchField(text: $text)
-                Text("Category")
+                Text(localization.t("Category"))
                     .font(.h2)
                     .foregroundStyle(.appMainText)
                 HStack(spacing: 16) {
                     ForEach(categories, id: \.self) { cat in
-                        AppButton(title: LocalizedStringKey(cat), variant: selectedCategory == cat ? .primaryFilled : .secondaryTextFilled, size: .small) {
+                        AppButton(title: localization.t(cat), variant: selectedCategory == cat ? .primaryFilled : .secondaryTextFilled, size: .small) {
                             selectedCategory = cat
                         }
                     }
@@ -44,7 +46,7 @@ struct HomeContentView: View {
                     ProgressView()
                         .padding(.top,50)
                 }else if filteredRecipes.isEmpty{
-                    Text("No recipe found")
+                    Text(localization.t("No recipe found"))
                         .foregroundStyle(.appSecondaryText)
                         .padding(.top,50)
                     
@@ -64,7 +66,7 @@ struct HomeContentView: View {
                                         .frame(width: 40, height: 40)
                                         .clipShape(Circle())
                                     
-                                    Text(user?.userName ?? "Unknown")
+                                    Text(user?.userName ?? localization.t("Unknown"))
                                         .font(.p2)
                                     
                                 }
@@ -84,6 +86,7 @@ struct HomeContentView: View {
                 }
             Spacer().frame(height: 80)
         }
+        .navigationBarBackButtonHidden(true)
         .clipped()
         .task {
                 await viewModel.loadData()

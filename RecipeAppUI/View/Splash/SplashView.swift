@@ -3,6 +3,8 @@ import SwiftUI
 struct SplashView: View {
     @Environment(NavigatorCoordinator.self) var coordinator
     @Environment(UserCoordinator.self) var userCoordinator
+    @State private var localization = LocalizedManager.shared
+
 
     @State private var showRecipe = false
     @State private var showApp = false
@@ -13,13 +15,13 @@ struct SplashView: View {
                 .ignoresSafeArea(.all)
 
             VStack(spacing: 0) {
-                Text("Recipe")
+                Text(localization.t("Recipe"))
                     .font(.system(size: 52, weight: .bold))
                     .foregroundStyle(.white)
                     .offset(y: showRecipe ? 0 : 200)
                     .opacity(showRecipe ? 1 : 0)
 
-                Text("App")
+                Text(localization.t("App"))
                     .font(.system(size: 52, weight: .bold))
                     .foregroundStyle(.white)
                     .offset(y: showApp ? 0 : 40)

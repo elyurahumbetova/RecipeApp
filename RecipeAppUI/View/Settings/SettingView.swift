@@ -1,28 +1,28 @@
 import SwiftUI
 import FirebaseAuth
+
 struct SettingView: View {
     @Environment(NavigatorCoordinator.self) private var coordinator
     @Environment(UserCoordinator.self) var userCoordinator
     @AppStorage("appColorScheme") private var appColorScheme: String = "system"
-    
+
     @State private var viewModel = SettingViewModel()
-    @Environment(LocalizedManager.self) private var localization
-    
-    private let languages:[(code: String,name: String)] = [
+    @State private var localization = LocalizedManager.shared
+
+    private let languages: [(code: String, name: String)] = [
         ("az", "Azərbaycan"),
         ("en", "English"),
         ("ru", "Русский"),
-        ("tr", "Turkce")
-
+        ("tr", "Türkçe")
     ]
+
     var body: some View {
         List {
-            
             Section {
                 AppearanceRow(
                     icon: "sun.max.fill",
                     iconColor: .orange,
-                    title: "Light Mode",
+                    title: localization.t("Light Mode"),
                     isSelected: appColorScheme == "light"
                 ) {
                     appColorScheme = "light"
@@ -31,7 +31,7 @@ struct SettingView: View {
                 AppearanceRow(
                     icon: "moon.fill",
                     iconColor: .black,
-                    title: "Dark Mode",
+                    title: localization.t("Dark Mode"),
                     isSelected: appColorScheme == "dark"
                 ) {
                     appColorScheme = "dark"
@@ -40,30 +40,28 @@ struct SettingView: View {
                 AppearanceRow(
                     icon: "iphone",
                     iconColor: .gray,
-                    title: "System Default",
+                    title: localization.t("System Default"),
                     isSelected: appColorScheme == "system"
                 ) {
                     appColorScheme = "system"
                 }
             } header: {
-                Text("Appearance")
+                Text(localization.t("Appearance"))
             }
 
-            Section{
-                ForEach(languages, id: \.code){language in
-                    AppearanceRow(
-                        icon: "globe",
-                        iconColor: .blue,
-                        title: LocalizedStringKey(language.name),
-                        isSelected: localization.currentLang == language.code )
-                    {
-                        localization.currentLang = language.code
+            Section {
+                
+                Picker(localization.t("Language"), selection: $localization.currentLang) {
+                    ForEach(languages, id: \.code) { language in
+                        Text(language.name)
+                            .tag(language.code)
                     }
                 }
-            }header: {
-                Text("Language")
+                .pickerStyle(.menu)
+            } header: {
+                Text(localization.t("Language"))
             }
-            
+
             Section {
                 Button {
                     viewModel.requestLogout()
@@ -77,38 +75,38 @@ struct SettingView: View {
                                 .font(.system(size: 15, weight: .medium))
                                 .foregroundColor(.white)
                         }
-                        Text("Log Out")
+                        Text(localization.t("Log Out"))
                             .foregroundColor(.red)
                             .font(.p1)
                     }
                 }
             } header: {
-                Text("Account")
+                Text(localization.t("Account"))
             }
         }
-        .navigationTitle("Settings")
+        .navigationTitle(localization.t("Settings"))
         .navigationBarTitleDisplayMode(.inline)
-        .alert("Log Out", isPresented: $viewModel.showLogoutAlert) {
-            Button("Log Out", role: .destructive) {
+        .id(localization.currentLang)
+        .alert(localization.t("Log Out"), isPresented: $viewModel.showLogoutAlert) {
+            Button(localization.t("Log Out"), role: .destructive) {
                 appColorScheme = viewModel.logout(
                     currentColorScheme: appColorScheme,
                     userCoordinator: userCoordinator,
                     coordinator: coordinator)
             }
-            Button("Cancel", role: .cancel) {
+            Button(localization.t("Cancel"), role: .cancel) {
                 viewModel.cancelLogout()
             }
         } message: {
-            Text("Are you sure you want to log out?")
+            Text(localization.t("Are you sure you want to log out?"))
         }
     }
 }
 
-
 struct AppearanceRow: View {
     let icon: String
     let iconColor: Color
-    let title: LocalizedStringKey
+    let title: String
     let isSelected: Bool
     let action: () -> Void
 
@@ -124,7 +122,7 @@ struct AppearanceRow: View {
                         .foregroundColor(.white)
                 }
 
-                Text(title)
+                Text(verbatim: title)
                     .foregroundColor(.appMainText)
                     .font(.p1)
 
@@ -139,8 +137,3 @@ struct AppearanceRow: View {
         }
     }
 }
-
-//#Preview {
-//    SettingView()
-//        .environment(NavigatorCoordinator())
-//}

@@ -14,12 +14,14 @@ struct UploadStep2View: View {
     @Bindable var viewModel: UploadViewModel
     @FocusState private var ingredientFocus: Int?
     @FocusState private var stepFocus: Int?
+    @State private var localization = LocalizedManager.shared
+
     
     var body: some View {
         VStack {
             ScrollView {
                 VStack(alignment: .leading) {
-                    Text("Ingredients")
+                    Text(localization.t("Ingredients"))
                         .font(.h2)
                         .foregroundStyle(.appMainText)
                     ForEach($viewModel.ingredients.indices, id: \.self) { index in
@@ -32,7 +34,7 @@ struct UploadStep2View: View {
                                 }
                             
                             AppTextField(
-                                type: .other(placeholder: "Enter ingredient", leadingIcon: nil),
+                                type: .other(placeholder: localization.t("Enter ingredient"), leadingIcon: nil),
                                 text: $viewModel.ingredients[index]
                             )
                             .focused($ingredientFocus,equals: index)
@@ -60,7 +62,7 @@ struct UploadStep2View: View {
 
                     }
                 }
-                AppButton(title: " + Ingrediet", variant: .secondaryTextOutlined, size: .regular) {
+                AppButton(title: localization.t("+ Ingrediet"), variant: .secondaryTextOutlined, size: .regular) {
                     let newIndex = viewModel.addIngredient()
                     DispatchQueue.main.async{
                         
@@ -74,7 +76,7 @@ struct UploadStep2View: View {
                     .frame(height: 8)
                 
                 VStack(alignment: .leading) {
-                    Text("Steps")
+                    Text(localization.t("Steps"))
                         .font(.h2)
                         .foregroundStyle(.appMainText)
                     
@@ -129,7 +131,7 @@ struct UploadStep2View: View {
                         } label: {
                             HStack {
                                 Image(systemName: "plus.circle.fill")
-                                Text("Add Step")
+                                Text(localization.t("Add Step"))
                             }
                             .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.4))
                         }

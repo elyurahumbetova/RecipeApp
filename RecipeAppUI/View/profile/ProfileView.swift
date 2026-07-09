@@ -4,7 +4,7 @@ import Kingfisher
 
 struct StatItem: View {
     let value: Int
-    let label: LocalizedStringKey
+    let label: String
     var body: some View {
         VStack(spacing: 2) {
             Text(value.formatted(.number))
@@ -23,7 +23,9 @@ struct StatItem: View {
 struct ProfileTabPicker: View {
     
     @Binding var selected: Int
-    let tabs: [LocalizedStringKey] = ["Recipes", "Liked"]
+    let tabs: [String] = ["Recipes", "Liked"]
+    @State private var localization = LocalizedManager.shared
+
 
     var body: some View {
         HStack(spacing: 0) {
@@ -33,7 +35,7 @@ struct ProfileTabPicker: View {
                     }
                 } label: {
                     VStack(spacing: 0) {
-                        Text(tabs[i])
+                        Text(localization.t(tabs[i]))
                             .font(.h3)
                             .foregroundColor(selected == i ? .appPrimary : .appSecondaryText)
                             .frame(maxWidth: .infinity)
@@ -61,84 +63,88 @@ struct ProfileView: View {
     @State private var selectedTab = 0
     @State private var selectedItem: PhotosPickerItem?
     let columns = [GridItem(.flexible()), GridItem(.flexible())]
+    @State private var localization = LocalizedManager.shared
+
     
     @Environment(NavigatorCoordinator.self) var coordinator
     var body: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                VStack(spacing: 8) {
-                    PhotosPicker(selection: $selectedItem, matching: .images) {
-                        ZStack {
-                            Circle().fill(.appForm)
-                            if let image = viewModel.selectedImage {
-                                
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .scaledToFill()
-                                    .clipShape(Circle())
-                                
-                            } else if !viewModel.profileImageURL.isEmpty {
-                               
-                                
-                                KFImage(URL(string: viewModel.profileImageURL))
-                                    .placeholder{
-                                        ProgressView()
-                                    }
-                                    .resizable()
-                                    .scaledToFill()
-                                    .clipShape(Circle())
-                                
-                            } else {
-                                
-                                Image(systemName: "person.crop.circle.fill")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .foregroundColor(.appSecondaryText)
+            ScrollView{
+                VStack(spacing: 0) {
+                    VStack(spacing: 8) {
+                        PhotosPicker(selection: $selectedItem, matching: .images) {
+                            ZStack {
+                                Circle().fill(.appForm)
+                                if let image = viewModel.selectedImage {
+                                    
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .scaledToFill()
+                                        .clipShape(Circle())
+                                    
+                                } else if !viewModel.profileImageURL.isEmpty {
+                                    
+                                    
+                                    KFImage(URL(string: viewModel.profileImageURL))
+                                        .placeholder{
+                                            ProgressView()
+                                        }
+                                        .resizable()
+                                        .scaledToFill()
+                                        .clipShape(Circle())
+                                    
+                                } else {
+                                    
+                                    Image(systemName: "person.crop.circle.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .foregroundColor(.appSecondaryText)
+                                }
                             }
                         }
-                    }
-                    .frame(width: 90, height: 90)
-                    .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 4)
-                    .onChange(of: selectedItem) { _, newItem in
-                        Task {
-                            await viewModel.handlePhotoSelection(newItem)
+                        .frame(width: 90, height: 90)
+                        .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 4)
+                        .onChange(of: selectedItem) { _, newItem in
+                            Task {
+                                await viewModel.handlePhotoSelection(newItem)
+                            }
                         }
+                        
+                        Text(viewModel.userName.isEmpty ? localization.t("Loading...") : viewModel.userName)
+                            .font(.h2)
+                            .foregroundColor(.appMainText)
                     }
+                    .padding(.top, 8)
                     
-                    Text(viewModel.userName.isEmpty ? "Loading..." : viewModel.userName)
-                        .font(.h2)
-                        .foregroundColor(.appMainText)
-                }
-                .padding(.top, 8)
-                
-                
-                HStack {
-                    StatItem(value: 32,   label: LocalizedStringKey("Recipes"))
-                    Rectangle().fill(Color(.systemGray4)).frame(width: 1, height: 36)
-                    StatItem(value: 782,  label: LocalizedStringKey("Following"))
-                    Rectangle().fill(Color(.systemGray4)).frame(width: 1, height: 36)
-                    StatItem(value: 1287, label: LocalizedStringKey("Followers"))
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 12)
-                
-                
-                ProfileTabPicker(selected: $selectedTab)
+                    
+                    HStack {
+                        StatItem(value: 32,   label: localization.t("Recipes"));
+                        Rectangle().fill(Color(.systemGray4)).frame(width: 1, height: 36);
+                        StatItem(value: 782,  label: localization.t("Following"));
+                        Rectangle().fill(Color(.systemGray4)).frame(width: 1, height: 36);
+                        StatItem(value: 1287, label: localization.t("Followers"))
+                    }
+                    .padding(.horizontal, 16)
                     .padding(.top, 12)
-                
-                
-                
-                if viewModel.isLoading {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, minHeight: 200)
-                } else if selectedTab == 0 {
-                    recipeGrid(recipes: viewModel.recipes, empthyText: LocalizedStringKey("No recipes yet"))
-                } else {
-                    recipeGrid(recipes: viewModel.likedRecipes, empthyText: LocalizedStringKey("No liked recipes yet"))
+                    
+                    
+                    ProfileTabPicker(selected: $selectedTab)
+                        .padding(.top, 12)
+                    
+                    
+                    
+                    if viewModel.isLoading {
+                        ProgressView()
+                            .frame(maxWidth: .infinity, minHeight: 200)
+                    } else if selectedTab == 0 {
+                        recipeGrid(recipes: viewModel.recipes, empthyText: localization.t("No recipes yet"))
+                    } else {
+                        recipeGrid(recipes: viewModel.likedRecipes, empthyText: localization.t("No liked recipes yet"))
+                    }
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .navigationTitle("My Profile")
+            .navigationTitle(localization.t("My Profile"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -170,7 +176,7 @@ struct ProfileView: View {
         
     }
     @ViewBuilder
-    private func recipeGrid(recipes: [RecipeModel], empthyText: LocalizedStringKey) -> some View{
+    private func recipeGrid(recipes: [RecipeModel], empthyText: String) -> some View{
         if recipes.isEmpty{
             VStack{
                 Spacer()
@@ -180,7 +186,6 @@ struct ProfileView: View {
                 Spacer()
             }
             }else {
-                ScrollView{
                     LazyVGrid(columns: columns){
                         ForEach(recipes){ recipe in
                             RecipeCardView(recipe: recipe)
@@ -194,10 +199,10 @@ struct ProfileView: View {
                                             await viewModel.deleteRecipe(recipe)
                                         }
                                         } label: {
-                                            Label("Delete",systemImage: "trash")
+                                            Label(localization.t("Delete"),systemImage: "trash")
                                         }
                                     }
-                                }
+                                
                             
                         }
                     }

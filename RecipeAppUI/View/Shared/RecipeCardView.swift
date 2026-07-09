@@ -6,6 +6,7 @@ import Kingfisher
 struct RecipeCardView: View {
     let recipe: RecipeModel
     @State private var isLiked = false
+    @State private var localization = LocalizedManager.shared
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
@@ -53,7 +54,7 @@ struct RecipeCardView: View {
                 .lineLimit(1)
 
             HStack(spacing: 4) {
-                Text("Food")
+                Text(localization.t("Food"))
                     .font(.p2)
                     .foregroundStyle(.appSecondaryText)
 
@@ -61,7 +62,7 @@ struct RecipeCardView: View {
                     .fill(.appSecondaryText)
                     .frame(width: 4, height: 4)
 
-                Text("\(recipe.cookingMinute) mins")
+                Text(String(format: localization.t("%lld mins"),recipe.cookingMinute))
                     .font(.p2)
                     .foregroundStyle(.appSecondaryText)
             }
