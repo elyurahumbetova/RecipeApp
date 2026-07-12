@@ -18,6 +18,18 @@ struct RecipeModel: Identifiable, Codable, Hashable {
     let steps: [String]
     let createdAt: Timestamp
     let userId: String?
+    var type: String
     
 }
 
+enum FoodType: String, Codable,CaseIterable {
+    case food = "food"
+    case drink = "drink"
+    
+    var title: String {
+        switch self{
+        case .food : return LocalizedManager.shared.t("Food")
+        case .drink: return LocalizedManager.shared.t("Drink")
+        }
+    }
+}

@@ -20,3 +20,6 @@ func fetchRecipes() async throws -> [RecipeModel]{
 extension Notification.Name{
     static let recipeUploaded = Notification.Name("recipeUploaded")
 }
+
+
+

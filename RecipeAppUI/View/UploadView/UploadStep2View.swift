@@ -20,10 +20,40 @@ struct UploadStep2View: View {
     var body: some View {
         VStack {
             ScrollView {
-                VStack(alignment: .leading) {
+                VStack(alignment: .leading,spacing: 16) {
+                    HStack(alignment: .firstTextBaseline) {
+                        Text(localization.t("Cooking Durantion"))
+                            .font(.h2)
+                            .foregroundStyle(.appMainText)
+//                            .padding(.top,14)
+                        Text(localization.t("(in minutes)"))
+                            .font(.p1)
+                            .foregroundStyle(.appSecondaryText)
+                    }
+                    HStack {
+                        Text("<10")
+                            .font(.h3)
+                            .foregroundStyle(.appPrimary)
+                        Spacer()
+                        Text("\(Int(viewModel.cookingDuration))")
+                            .font(.h3)
+                            .foregroundStyle(viewModel.cookingDuration < 35 ? .appSecondaryText : .appPrimary)
+                        Spacer()
+                        Text(">60")
+                            .font(.h3)
+                            .foregroundStyle(viewModel.cookingDuration > 59 ? .appPrimary : .appSecondaryText)
+                    }
+                    Slider(value: $viewModel.cookingDuration, in: 10...60, step: 1.0)
+                        .tint(.appPrimary)
+                    
+                    Rectangle()
+                        .fill(.appForm)
+                        .frame(height: 8)
                     Text(localization.t("Ingredients"))
                         .font(.h2)
                         .foregroundStyle(.appMainText)
+                        .padding(.top,16)
+
                     ForEach($viewModel.ingredients.indices, id: \.self) { index in
                         HStack(spacing: 12) {
                             Image("Drag")
@@ -79,6 +109,8 @@ struct UploadStep2View: View {
                     Text(localization.t("Steps"))
                         .font(.h2)
                         .foregroundStyle(.appMainText)
+                        .padding(.top,16)
+
                     
                     VStack(alignment: .leading, spacing: 8) {
                         ForEach(viewModel.steps.indices, id: \.self) { index in
@@ -136,6 +168,7 @@ struct UploadStep2View: View {
                             .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.4))
                         }
                     }
+                    
                 }
             }
             .padding(.horizontal, 24)

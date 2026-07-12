@@ -11,10 +11,18 @@ struct HomeContentView: View {
 
         
     
-    var filteredRecipes: [RecipeModel]
-    {
-        if text.isEmpty{return viewModel.recipes }
-        return viewModel.recipes.filter{ $0.title.localizedCaseInsensitiveContains(text)}
+    var filteredRecipes: [RecipeModel] {
+        var result = viewModel.recipes
+        if selectedCategory != "All" {
+            result = result.filter {
+                $0.type.caseInsensitiveCompare(selectedCategory) == .orderedSame }
+        }
+        
+        if !text.isEmpty {
+            result = result.filter { $0.title.localizedCaseInsensitiveContains(text) }
+        }
+        
+        return result
     }
     var body: some View {
         ScrollView {
@@ -110,7 +118,8 @@ struct HomeContentView: View {
         ingredients: ["flour", "egg"],
         steps: ["Mix", "Cook"],
         createdAt: Timestamp(),
-        userId: "sdknaldk"
+        userId: "sdknaldk",
+        type: "food"
     ))
     .frame(width: 180) 
     .padding()

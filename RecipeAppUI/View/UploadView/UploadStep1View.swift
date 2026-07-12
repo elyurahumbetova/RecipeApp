@@ -53,52 +53,56 @@ struct UploadStep1View: View {
             }
             .clipped()
             .clipShape(RoundedRectangle(cornerRadius: 12))
-            .padding(.horizontal, 12)
         }
         .padding(.horizontal, 24)
+        .padding(.bottom, 24)
 
-        VStack(alignment: .leading, spacing: 10) {
-            Text(localization.t("Food"))
-                .font(.h2)
-                .foregroundStyle(.appMainText)
-            AppTextField(type: .other(placeholder: localization.t("Enter food name"), leadingIcon: nil), text: $viewModel.foodName)
-
-            Text(localization.t("Description"))
-                .font(.h2)
-                .foregroundStyle(.appMainText)
-                .padding(.top,14)
-            TextField(localization.t("Tell a little about your food"), text: $viewModel.descriptionText, axis: .vertical)
-                .lineLimit(3...5)
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(.appOutline, lineWidth: 1)
-                )
-
-            HStack(alignment: .firstTextBaseline) {
-                Text(localization.t("Cooking Durantion"))
+        VStack(alignment: .leading, spacing: 24) {
+            VStack(alignment: .leading,spacing: 10){
+                Text(localization.t("Is it food or drink?"))
+                    .font(.h2)
+                    .foregroundStyle(.appMainText)
+                Picker("",selection:$viewModel.foodType){
+                    ForEach(FoodType.allCases, id:\.self){ type in
+                        Text(localization.t(type.title))
+                            .tag(type)
+                    }
+                }
+                .pickerStyle(.segmented)
+                .onAppear {
+                    UISegmentedControl.appearance().setTitleTextAttributes(
+                        [.foregroundColor: UIColor.appPrimary],
+                        for: .selected
+                    )
+                }
+            }
+            VStack(alignment:.leading,spacing: 10){
+                
+                Text(localization.t("Food/Drink"))
+                    .font(.h2)
+                    .foregroundStyle(.appMainText)
+                AppTextField(type: .other(placeholder: localization.t("Enter food/drink name"), leadingIcon: nil), text: $viewModel.foodName)
+            }
+            VStack(alignment:.leading,spacing: 10){
+                
+                Text(localization.t("Description"))
                     .font(.h2)
                     .foregroundStyle(.appMainText)
                     .padding(.top,14)
-                Text(localization.t("(in minutes)"))
-                    .font(.p1)
-                    .foregroundStyle(.appSecondaryText)
+                TextField(localization.t("Tell a little about your food/drink"), text: $viewModel.descriptionText, axis: .vertical)
+                    .lineLimit(3...5)
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(.appOutline, lineWidth: 1)
+                    )
+                
             }
-            HStack {
-                Text("<10")
-                    .font(.h3)
-                    .foregroundStyle(.appPrimary)
-                Spacer()
-                Text("\(Int(viewModel.cookingDuration))")
-                    .font(.h3)
-                    .foregroundStyle(viewModel.cookingDuration < 35 ? .appSecondaryText : .appPrimary)
-                Spacer()
-                Text(">60")
-                    .font(.h3)
-                    .foregroundStyle(viewModel.cookingDuration > 59 ? .appPrimary : .appSecondaryText)
-            }
-            Slider(value: $viewModel.cookingDuration, in: 10...60, step: 1.0)
-                .tint(.appPrimary)
+            
+            
+            
+
+            
                 
         }
         .padding(.horizontal, 24)

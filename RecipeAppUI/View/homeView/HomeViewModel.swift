@@ -16,6 +16,7 @@ class HomeViewModel{
     private var hasLoaded = false
     
     var recipeService = RecipeService()
+    var selectedFilter: FoodType? = nil
     
     func loadData() async{
         
@@ -42,6 +43,9 @@ class HomeViewModel{
         }
     }
     
+    
+    
+    
     private func fetchProfiles() async -> [String: UserModel]{
         do{
             return try await UserService().fetchProfiles()
@@ -51,4 +55,5 @@ class HomeViewModel{
         }
     }
     
+   
 }

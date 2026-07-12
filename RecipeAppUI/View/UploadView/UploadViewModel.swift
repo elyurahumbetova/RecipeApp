@@ -27,9 +27,8 @@ class UploadViewModel{
     var showSuccess: Bool = false
     var steps: [String] = [""]
     var isUploading: Bool = false
-    var uploadError: String? = nil  
-
-    
+    var uploadError: String? = nil
+    var foodType: FoodType = .food
     private let recipeService = RecipeService()
     private let storageService = StorageService()
     
@@ -126,7 +125,8 @@ class UploadViewModel{
             "ingredients": cleanIngredients,
             "steps": cleanSteps,
             "createdAt": FieldValue.serverTimestamp(),
-            "userId": uid
+            "userId": uid,
+            "type": foodType.rawValue
         ]
 
         do {
