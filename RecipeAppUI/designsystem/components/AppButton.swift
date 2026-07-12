@@ -64,9 +64,9 @@ struct AppButton: View {
             case .secondaryFilled:
                 return .white
             case .primaryOutlined:
-                return Color(.appPrimary)
+                return .appPrimary
             case .secondaryTextOutlined:
-                return .black
+                return .appMainText
             case .secondaryTextFilled:
                 return .appSecondaryText
             }

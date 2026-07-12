@@ -11,6 +11,7 @@ import PhotosUI
 struct UploadStep1View: View {
     @Bindable var viewModel: UploadViewModel
     @State private var localization = LocalizedManager.shared
+    @FocusState private var isDescritionFocused: Bool
 
 
     var body: some View {
@@ -92,9 +93,12 @@ struct UploadStep1View: View {
                 TextField(localization.t("Tell a little about your food/drink"), text: $viewModel.descriptionText, axis: .vertical)
                     .lineLimit(3...5)
                     .padding()
+                    .focused($isDescritionFocused)
                     .background(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(.appOutline, lineWidth: 1)
+                            .stroke(
+                                isDescritionFocused ? .appPrimary : .appOutline
+                                , lineWidth: 1)
                     )
                 
             }

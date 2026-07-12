@@ -47,7 +47,7 @@ struct UploadStep2View: View {
                         .tint(.appPrimary)
                     
                     Rectangle()
-                        .fill(.appForm)
+                        .fill(.appOutline.opacity(0.45))
                         .frame(height: 8)
                     Text(localization.t("Ingredients"))
                         .font(.h2)
@@ -81,7 +81,7 @@ struct UploadStep2View: View {
                                 viewModel.removeIngredient(at: index)
                             } label: {
                                 Image(systemName: "minus.circle.fill")
-                                    .foregroundStyle(.red)
+                                    .foregroundStyle(.appSecondary)
                                     .frame(width: 28, height: 28)
                             }
                         }
@@ -102,7 +102,7 @@ struct UploadStep2View: View {
                 .padding(.top, 16)
                 
                 Rectangle()
-                    .fill(.appForm)
+                    .fill(.appOutline.opacity(0.45))
                     .frame(height: 8)
                 
                 VStack(alignment: .leading) {
@@ -119,7 +119,7 @@ struct UploadStep2View: View {
                                     .font(.caption.bold())
                                     .foregroundColor(.white)
                                     .frame(width: 24, height: 24)
-                                    .background(.appMainText)
+                                    .background(.appPrimary)
                                     .clipShape(Circle())
                                 
                                 AppTextField(
@@ -165,7 +165,7 @@ struct UploadStep2View: View {
                                 Image(systemName: "plus.circle.fill")
                                 Text(localization.t("Add Step"))
                             }
-                            .foregroundColor(Color(red: 0.1, green: 0.15, blue: 0.4))
+                            .foregroundColor(.appPrimary)
                         }
                     }
                     

@@ -15,7 +15,7 @@ struct HomeContentView: View {
         var result = viewModel.recipes
         if selectedCategory != "All" {
             result = result.filter {
-                $0.type.caseInsensitiveCompare(selectedCategory) == .orderedSame }
+                $0.type.rawValue.caseInsensitiveCompare(selectedCategory) == .orderedSame }
         }
         
         if !text.isEmpty {
@@ -108,19 +108,19 @@ struct HomeContentView: View {
     
 }
 
-#Preview {
-    RecipeCardView(recipe: RecipeModel(
-        id: "1",
-        title: "Pancake",
-        description: "Delicious pancake",
-        cookingMinute: 30,
-        imageURL: "https://olo-images-live.imgix.net/cb/cbe0798e0b9e4bbbb7391c96da4d9010.jpg",
-        ingredients: ["flour", "egg"],
-        steps: ["Mix", "Cook"],
-        createdAt: Timestamp(),
-        userId: "sdknaldk",
-        type: "food"
-    ))
-    .frame(width: 180) 
-    .padding()
-}
+//#Preview {
+//    RecipeCardView(recipe: RecipeModel(
+//        id: "1",
+//        title: "Pancake",
+//        description: "Delicious pancake",
+//        cookingMinute: 30,
+//        imageURL: "https://olo-images-live.imgix.net/cb/cbe0798e0b9e4bbbb7391c96da4d9010.jpg",
+//        ingredients: ["flour", "egg"],
+//        steps: ["Mix", "Cook"],
+//        createdAt: Timestamp(),
+//        userId: "sdknaldk",
+//        type: "food"
+//    ))
+//    .frame(width: 180) 
+//    .padding()
+//}

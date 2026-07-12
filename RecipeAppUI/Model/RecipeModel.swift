@@ -18,7 +18,7 @@ struct RecipeModel: Identifiable, Codable, Hashable {
     let steps: [String]
     let createdAt: Timestamp
     let userId: String?
-    var type: String
+    var type: FoodType
     
 }
 

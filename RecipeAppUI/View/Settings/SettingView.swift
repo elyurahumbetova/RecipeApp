@@ -15,52 +15,76 @@ struct SettingView: View {
         ("ru", "Русский"),
         ("tr", "Türkçe")
     ]
-
-    var body: some View {
-        List {
-            Section {
-                AppearanceRow(
-                    icon: "sun.max.fill",
-                    iconColor: .orange,
-                    title: localization.t("Light Mode"),
-                    isSelected: appColorScheme == "light"
-                ) {
-                    appColorScheme = "light"
-                }
-
-                AppearanceRow(
-                    icon: "moon.fill",
-                    iconColor: .black,
-                    title: localization.t("Dark Mode"),
-                    isSelected: appColorScheme == "dark"
-                ) {
-                    appColorScheme = "dark"
-                }
-
-                AppearanceRow(
-                    icon: "iphone",
-                    iconColor: .gray,
-                    title: localization.t("System Default"),
-                    isSelected: appColorScheme == "system"
-                ) {
-                    appColorScheme = "system"
-                }
-            } header: {
-                Text(localization.t("Appearance"))
-            }
-
-            Section {
-                
-                Picker(localization.t("Language"), selection: $localization.currentLang) {
-                    ForEach(languages, id: \.code) { language in
-                        Text(language.name)
-                            .tag(language.code)
+    
+    private var selectedLanguageName: String{
+        languages.first{
+            $0.code == localization.currentLang
+        }? .name ?? "English"
+    }
+        var body: some View {
+            List {
+                Section {
+                    AppearanceRow(
+                        icon: "sun.max.fill",
+                        iconColor: .orange,
+                        title: localization.t("Light Mode"),
+                        isSelected: appColorScheme == "light"
+                    ) {
+                        appColorScheme = "light"
                     }
+                    
+                    AppearanceRow(
+                        icon: "moon.fill",
+                        iconColor: .black,
+                        title: localization.t("Dark Mode"),
+                        isSelected: appColorScheme == "dark"
+                    ) {
+                        appColorScheme = "dark"
+                    }
+                    
+                    AppearanceRow(
+                        icon: "iphone",
+                        iconColor: .gray,
+                        title: localization.t("System Default"),
+                        isSelected: appColorScheme == "system"
+                    ) {
+                        appColorScheme = "system"
+                    }
+                } header: {
+                    Text(localization.t("Appearance"))
                 }
-                .pickerStyle(.menu)
-            } header: {
-                Text(localization.t("Language"))
-            }
+                
+                Section {
+                    Menu {
+                        ForEach(languages, id: \.code) { language in
+                            Button {
+                                localization.currentLang = language.code
+                            } label: {
+                                if localization.currentLang == language.code {
+                                    Label(language.name, systemImage: "checkmark")
+                                } else {
+                                    Text(language.name)
+                                }
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 6) {
+                            Text(selectedLanguageName)
+                                .font(.p1)
+                                .foregroundStyle(.appMainText)
+
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.system(size: 12, weight: .semibold))
+                                .foregroundStyle(.appMainText)
+
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .contentShape(Rectangle())
+                    }
+                } header: {
+                    Text(localization.t("Language"))
+                }
+        
 
             Section {
                 Button {

@@ -54,7 +54,7 @@ struct RecipeCardView: View {
                 .lineLimit(1)
 
             HStack(spacing: 4) {
-                Text(localization.t("Food"))
+                Text(localization.t("\(recipe.type.title)"))
                     .font(.p2)
                     .foregroundStyle(.appSecondaryText)
 
