@@ -5,11 +5,13 @@ import Kingfisher
 struct StatItem: View {
     let value: Int
     let label: String
+
     var body: some View {
         VStack(spacing: 2) {
             Text(value.formatted(.number))
                 .font(.h2)
                 .foregroundColor(.appMainText)
+
             Text(label)
                 .font(.s)
                 .foregroundColor(.appSecondaryText)
@@ -19,96 +21,111 @@ struct StatItem: View {
 }
 
 
-
 struct ProfileTabPicker: View {
-    
     @Binding var selected: Int
-    let tabs: [String] = ["Recipes", "Liked"]
+    private let tabs = ["Recipes", "Liked"]
     @State private var localization = LocalizedManager.shared
-
 
     var body: some View {
         HStack(spacing: 0) {
-            ForEach(tabs.indices, id: \.self) { i in
+            ForEach(tabs.indices, id: \.self) { index in
                 Button {
-                    withAnimation(.easeInOut(duration: 0.2)) { selected = i
+                    withAnimation(.easeInOut(duration: 0.2)) {
+                        selected = index
                     }
                 } label: {
                     VStack(spacing: 0) {
-                        Text(localization.t(tabs[i]))
+                        Text(localization.t(tabs[index]))
                             .font(.h3)
-                            .foregroundColor(selected == i ? .appPrimary : .appSecondaryText)
+                            .foregroundColor(
+                                selected == index
+                                    ? .appPrimary
+                                    : .appSecondaryText
+                            )
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 12)
 
                         Rectangle()
-                            .fill(selected == i ? .appPrimary : Color.clear)
+                            .fill(
+                                selected == index
+                                    ? .appPrimary
+                                    : Color.clear
+                            )
                             .frame(height: 2)
                     }
                 }
+                .buttonStyle(.plain)
             }
         }
-        .overlay(
+        .overlay(alignment: .bottom) {
             Rectangle()
                 .fill(Color(.systemGray5))
-                .frame(height: 1),
-            alignment: .bottom
-        )
+                .frame(height: 1)
+        }
     }
 }
 
-
 struct ProfileView: View {
     @State private var viewModel = ProfileViewModel()
+
     @State private var selectedTab = 0
     @State private var selectedItem: PhotosPickerItem?
-    
-    @State private var showProfileHeader = true
-    @State private var lastOffset: CGFloat = 0
 
-    let columns = [GridItem(.flexible()), GridItem(.flexible())]
+    @State private var profileHeaderHeight: CGFloat = 190
+    @State private var profileHeaderOffset: CGFloat = 0
+
     @State private var localization = LocalizedManager.shared
 
-    
-    @Environment(NavigatorCoordinator.self) var coordinator
+    @Environment(NavigatorCoordinator.self)
+    private var coordinator
+
+    private let columns = [
+        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
+    ]
+
     var body: some View {
         NavigationView {
-            ScrollView{
-                GeometryReader{ geo in
-                    Color.clear
-                        .onChange(of: geo.frame(in: .named("scroll")).minY) { _, newValue in
-                            withAnimation(.easeInOut(duration: 0.2)){
-                                showProfileHeader = newValue > lastOffset
+            GeometryReader { containerProxy in
+                ZStack(alignment: .top) {
+                    profileScrollView(
+                        availableHeight: containerProxy.size.height
+                    )
+
+                    profileHeader
+                        .onGeometryChange(for: CGFloat.self) { proxy in
+                            proxy.size.height
+                        } action: { newHeight in
+                            guard newHeight > 0 else {
+                                return
                             }
-                            lastOffset = newValue
+
+                            profileHeaderHeight = newHeight
+
+                            profileHeaderOffset = min(
+                                0,
+                                max(
+                                    -newHeight,
+                                    profileHeaderOffset
+                                )
+                            )
                         }
+                        .offset(y: profileHeaderOffset)
+                        .zIndex(10)
                 }
-                .frame(height: 0)
-                VStack(spacing: 0) {
-                    if showProfileHeader{
-                        profileHeader
-                    }
-                   ProfileTabPicker(selected: $selectedTab)
-                        .padding(.top, 12)
-                    
-                    
-                    
-                    if viewModel.isLoading {
-                        ProgressView()
-                            .frame(maxWidth: .infinity, minHeight: 200)
-                    } else if selectedTab == 0 {
-                        recipeGrid(recipes: viewModel.recipes, empthyText: localization.t("No recipes yet"))
-                    } else {
-                        recipeGrid(recipes: viewModel.likedRecipes, empthyText: localization.t("No liked recipes yet"))
-                    }
-                }
+                .frame(
+                    maxWidth: .infinity,
+                    maxHeight: .infinity,
+                    alignment: .top
+                )
+                .clipped()
             }
-            .coordinateSpace(name: "scroll")
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .navigationTitle(localization.t("My Profile"))
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(
+                    placement: .navigationBarTrailing
+                ) {
                     Button {
                         coordinator.push(.settingView)
                     } label: {
@@ -120,125 +137,287 @@ struct ProfileView: View {
             .task {
                 await viewModel.loadInitialData()
             }
-            .onChange(of: selectedTab) { _, tab in
-                if tab == 1 {
-                    Task { await
-                        viewModel.fetchLikedRecipes()
-                        
-                    }
+            .onChange(of: selectedTab) { _, newTab in
+                guard newTab == 1 else {
+                    return
+                }
+
+                Task {
+                    await viewModel.fetchLikedRecipes()
                 }
             }
-            .onReceive(NotificationCenter.default.publisher(for: .recipeUploaded)) { _ in
+            .onReceive(
+                NotificationCenter.default.publisher(
+                    for: .recipeUploaded
+                )
+            ) { _ in
                 Task {
                     await viewModel.fetchMyRecipes()
                 }
             }
         }
-        
     }
-    private var profileHeader: some View{
+
+    private func profileScrollView(
+        availableHeight: CGFloat
+    ) -> some View {
+        ScrollView {
+            VStack(spacing: 0) {
+                Color.clear
+                    .frame(height: profileHeaderHeight)
+
+                ProfileTabPicker(selected: $selectedTab)
+                    .padding(.top, 12)
+                    .background(Color(.systemBackground))
+
+                profileContent
+                    .frame(maxWidth: .infinity)
+                    .frame(
+                        minHeight: max(
+                            200,
+                            availableHeight - 60
+                        ),
+                        alignment: .top
+                    )
+            }
+        }
+        .scrollIndicators(.hidden)
+        .onScrollGeometryChange(for: CGFloat.self) { geometry in
+            max(
+                0,
+                geometry.contentOffset.y
+                    + geometry.contentInsets.top
+            )
+        } action: { oldOffset, newOffset in
+            updateHeaderOffset(
+                oldScrollOffset: oldOffset,
+                newScrollOffset: newOffset
+            )
+        }
+    }
+
+    private func updateHeaderOffset(
+        oldScrollOffset: CGFloat,
+        newScrollOffset: CGFloat
+    ) {
+        guard profileHeaderHeight > 0 else {
+            return
+        }
+
+      
+        if newScrollOffset <= 0 {
+            profileHeaderOffset = 0
+            return
+        }
+
+        let scrollDelta =
+            newScrollOffset - oldScrollOffset
+
+        guard abs(scrollDelta) > 0.1 else {
+            return
+        }
+
+    
+        let newHeaderOffset =
+            profileHeaderOffset - scrollDelta
+
+        profileHeaderOffset = min(
+            0,
+            max(
+                -profileHeaderHeight,
+                newHeaderOffset
+            )
+        )
+    }
+
+
+    private var profileHeader: some View {
         VStack(spacing: 8) {
-            PhotosPicker(selection: $selectedItem, matching: .images) {
-                ZStack {
-                    Circle().fill(.appForm)
-                    if let image = viewModel.selectedImage {
-                        
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFill()
-                            .clipShape(Circle())
-                        
-                    } else if !viewModel.profileImageURL.isEmpty {
-                        
-                        
-                        KFImage(URL(string: viewModel.profileImageURL))
-                            .placeholder{
-                                ProgressView()
-                            }
-                            .resizable()
-                            .scaledToFill()
-                            .clipShape(Circle())
-                        
-                    } else {
-                        
-                        Image(systemName: "person.crop.circle.fill")
-                            .resizable()
-                            .scaledToFit()
-                            .foregroundColor(.appSecondaryText)
-                    }
-                }
-            }
-            .frame(width: 90, height: 90)
-            .shadow(color: .black.opacity(0.12), radius: 8, x: 0, y: 4)
-            .onChange(of: selectedItem) { _, newItem in
-                Task {
-                    await viewModel.handlePhotoSelection(newItem)
-                }
-            }
-            
-            Text(viewModel.userName.isEmpty ? localization.t("Loading...") : viewModel.userName)
-                .font(.h2)
-                .foregroundColor(.appMainText)
-            
-            HStack {
-                StatItem(value: 32,   label: localization.t("Recipes"));
-                Rectangle().fill(Color(.systemGray4)).frame(width: 1, height: 36);
-                StatItem(value: 782,  label: localization.t("Following"));
-                Rectangle().fill(Color(.systemGray4)).frame(width: 1, height: 36);
-                StatItem(value: 1287, label: localization.t("Followers"))
-            }
-            .padding(.horizontal, 16)
-            .padding(.top, 12)
+            profilePhoto
+
+            Text(
+                viewModel.userName.isEmpty
+                    ? localization.t("Loading...")
+                    : viewModel.userName
+            )
+            .font(.h2)
+            .foregroundColor(.appMainText)
+            .lineLimit(1)
+
+            profileStats
         }
         .padding(.top, 8)
-        .transition(.move(edge: .top).combined(with: .opacity))
-        
-        
-        
+        .padding(.bottom, 8)
+        .frame(maxWidth: .infinity)
+        .background(Color(.systemBackground))
     }
-    @ViewBuilder
-    private func recipeGrid(recipes: [RecipeModel], empthyText: String) -> some View{
-        if recipes.isEmpty{
-            VStack{
-                Spacer()
-                Text(empthyText)
-                    .foregroundStyle(.appSecondaryText)
-                    .padding(.top, 40)
-                Spacer()
+
+    private var profilePhoto: some View {
+        PhotosPicker(
+            selection: $selectedItem,
+            matching: .images
+        ) {
+            ZStack {
+                Circle()
+                    .fill(.appForm)
+
+                profilePhotoContent
             }
-            }else {
-                    LazyVGrid(columns: columns){
-                        ForEach(recipes){ recipe in
-                            RecipeCardView(recipe: recipe)
-                                .contentShape(Rectangle())
-                                .onTapGesture{
-                                    coordinator.push(.detailView1(recipe))
-                                }
-                                .contextMenu{
-                                    Button(role: .destructive){
-                                        Task{
-                                            await viewModel.deleteRecipe(recipe)
-                                        }
-                                        } label: {
-                                            Label(localization.t("Delete"),systemImage: "trash")
-                                        }
-                                    }
-                                
-                            
-                        }
-                    }
-                    .padding(16)
-                }
+            .clipShape(Circle())
+        }
+        .frame(width: 90, height: 90)
+        .shadow(
+            color: .black.opacity(0.12),
+            radius: 8,
+            x: 0,
+            y: 4
+        )
+        .onChange(of: selectedItem) { _, newItem in
+            Task {
+                await viewModel.handlePhotoSelection(
+                    newItem
+                )
             }
         }
-    
-    
-    
-    
+    }
+
+    @ViewBuilder
+    private var profilePhotoContent: some View {
+        if let image = viewModel.selectedImage {
+            Image(uiImage: image)
+                .resizable()
+                .scaledToFill()
+
+        } else if !viewModel.profileImageURL.isEmpty {
+            KFImage(
+                URL(string: viewModel.profileImageURL)
+            )
+            .placeholder {
+                ProgressView()
+            }
+            .resizable()
+            .scaledToFill()
+
+        } else {
+            Image(
+                systemName: "person.crop.circle.fill"
+            )
+            .resizable()
+            .scaledToFit()
+            .foregroundColor(.appSecondaryText)
+        }
+    }
 
 
+    private var profileStats: some View {
+        HStack(spacing: 0) {
+            StatItem(
+                value: viewModel.recipes.count,
+                label: localization.t("Recipes")
+            )
 
-//#Preview {
-//    ProfileView()
-//        .environment(NavigatorCoordinator())
-//}
+            statDivider
+
+            StatItem(
+                value: 782,
+                label: localization.t("Following")
+            )
+
+            statDivider
+
+            StatItem(
+                value: 1287,
+                label: localization.t("Followers")
+            )
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 12)
+    }
+
+    private var statDivider: some View {
+        Rectangle()
+            .fill(Color(.systemGray4))
+            .frame(width: 1, height: 36)
+    }
+
+
+    @ViewBuilder
+    private var profileContent: some View {
+        if viewModel.isLoading {
+            ProgressView()
+                .frame(
+                    maxWidth: .infinity,
+                    minHeight: 200
+                )
+
+        } else if selectedTab == 0 {
+            recipeGrid(
+                recipes: viewModel.recipes,
+                emptyText: localization.t(
+                    "No recipes yet"
+                )
+            )
+
+        } else {
+            recipeGrid(
+                recipes: viewModel.likedRecipes,
+                emptyText: localization.t(
+                    "No liked recipes yet"
+                )
+            )
+        }
+    }
+    @ViewBuilder
+    private func recipeGrid(
+        recipes: [RecipeModel],
+        emptyText: String
+    ) -> some View {
+        if recipes.isEmpty {
+            VStack {
+                Text(emptyText)
+                    .foregroundStyle(.appSecondaryText)
+                    .padding(.top, 40)
+
+                Spacer(minLength: 0)
+            }
+            .frame(maxWidth: .infinity)
+
+        } else {
+            LazyVGrid(
+                columns: columns,
+                spacing: 16
+            ) {
+                ForEach(recipes) { recipe in
+                    RecipeCardView(recipe: recipe)
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            coordinator.push(
+                                .detailView1(recipe)
+                            )
+                        }
+                        .contextMenu {
+                            Button(role: .destructive) {
+                                Task {
+                                    await viewModel.deleteRecipe(
+                                        recipe
+                                    )
+                                }
+                            } label: {
+                                Label(
+                                    localization.t("Delete"),
+                                    systemImage: "trash"
+                                )
+                            }
+                        }
+                }
+            }
+            .padding(16)
+        }
+    }
+}
+
+
+// #Preview {
+//     ProfileView()
+//         .environment(NavigatorCoordinator())
+// }

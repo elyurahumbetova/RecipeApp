@@ -127,9 +127,9 @@ struct UploadStep2View: View {
                             HStack(alignment: .center, spacing: 4) {
                                 Text("\(index + 1)")
                                     .font(.caption.bold())
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color(uiColor: .systemBackground))
                                     .frame(width: 24, height: 24)
-                                    .background(.appPrimary)
+                                    .background(Color(uiColor: .label))
                                     .clipShape(Circle())
                                 
                                 AppTextField(

@@ -51,7 +51,7 @@ struct DetailView1: View {
                     HStack {
                         Spacer()
                         Capsule()
-                            .fill(.appForm)
+                            .fill(Color(uiColor: .tertiaryLabel))
                             .frame(width: 40, height: 5)
                             .padding(.top, 12)
                         Spacer()
@@ -125,9 +125,9 @@ struct DetailView1: View {
                             HStack(alignment: .top, spacing: 12) {
                                 Text("\(index + 1)")
                                     .font(.p2)
-                                    .foregroundColor(.white)
+                                    .foregroundColor(Color(uiColor: .systemBackground))
                                     .frame(width: 24, height: 24)
-                                    .background(.appMainText)
+                                    .background(Color(uiColor: .label))
                                     .clipShape(Circle())
                                 
                                 Text(step)
@@ -140,7 +140,7 @@ struct DetailView1: View {
                 }
                 .padding(.horizontal, 24)
                 .frame(maxWidth: .infinity, alignment: .top)
-                .background(Color.white)
+                .background(Color(uiColor: .systemBackground))
                 .clipShape(RoundedRectangle(cornerRadius: 25))
                 .offset(y: (isExpanded ? expandedOffset : collapsedOffset) + dragOffset)
                 .animation(.interactiveSpring(), value: dragOffset)
