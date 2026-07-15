@@ -19,7 +19,9 @@ struct HomeContentView: View {
         }
         
         if !text.isEmpty {
-            result = result.filter { $0.title.localizedCaseInsensitiveContains(text) }
+            result = result.filter {
+                $0.title.localizedCaseInsensitiveContains(text)
+            }
         }
         
         return result

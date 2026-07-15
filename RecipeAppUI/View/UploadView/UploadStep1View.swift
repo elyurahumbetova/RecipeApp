@@ -83,6 +83,17 @@ struct UploadStep1View: View {
                     .font(.h2)
                     .foregroundStyle(.appMainText)
                 AppTextField(type: .other(placeholder: localization.t("Enter food/drink name"), leadingIcon: nil), text: $viewModel.foodName)
+                    .onChange(of: viewModel.foodName){ _,_ in
+                        if viewModel.foodNameError != nil {
+                            viewModel.validationStep1()
+                        }
+                        
+                    }
+                if let error = viewModel.foodNameError{
+                    Text(error)
+                        .foregroundStyle(.red)
+                        .font(.s)
+                }
             }
             VStack(alignment:.leading,spacing: 10){
                 
@@ -100,6 +111,18 @@ struct UploadStep1View: View {
                                 isDescritionFocused ? .appPrimary : .appOutline
                                 , lineWidth: 1)
                     )
+                    .onChange(of: viewModel.descriptionText){ _, _ in
+                        
+                        if viewModel.descriptionError != nil {
+                            viewModel.validationStep1()
+                        }
+                    }
+                if let error = viewModel.descriptionError{
+                    Text(error)
+                        .font(.s)
+                        .foregroundStyle(.red)
+                }
+
                 
             }
             

@@ -76,7 +76,9 @@ struct UploadStep2View: View {
                                     ingredientFocus = target
                                 }
                             }
-                            
+                            .onChange(of: viewModel.ingredients[index]){_,_ in
+                                viewModel.ingredientError.remove(index)
+                            }
                             Button {
                                 viewModel.removeIngredient(at: index)
                             } label: {
@@ -85,19 +87,27 @@ struct UploadStep2View: View {
                                     .frame(width: 28, height: 28)
                             }
                         }
+                        
+                        if viewModel.ingredientError.contains(index){
+                            Text(localization.t("This field is required"))
+                                .foregroundStyle(.red)
+                                .font(.s)
+                                .padding(.leading,40)
+                        }
+                    }
                         .transition(.asymmetric(
                             insertion: .move(edge: .top).combined(with: .opacity),
                             removal: .opacity.combined(with: .scale(scale: 0.9))
                         ))
 
                     }
-                }
                 AppButton(title: localization.t("+ Ingrediet"), variant: .secondaryTextOutlined, size: .regular) {
                     let newIndex = viewModel.addIngredient()
                     DispatchQueue.main.async{
                         
                         ingredientFocus = newIndex
                     }
+                    
                 }
                 .padding(.top, 16)
                 
@@ -136,6 +146,9 @@ struct UploadStep2View: View {
                                         stepFocus = target
                                     }
                                 }
+                                .onChange(of: viewModel.steps[index]) { _, _ in
+                                    viewModel.stepError.remove(index)
+                                }
                                 
                                 if viewModel.steps.count > 1 {
                                     Button {
@@ -147,6 +160,14 @@ struct UploadStep2View: View {
                                 }
                                 
                             }
+                            
+                            if viewModel.stepError.contains(index){
+                                Text(localization.t("This field is required"))
+                                    .font(.s)
+                                    .foregroundStyle(.red)
+                                    .padding(.leading,28)
+                            }
+                        }
                             .transition(.asymmetric(
                                 insertion: .move(edge: .top).combined(with: .opacity),
                                 removal: .opacity.combined(with: .scale(scale: 0.9))
@@ -170,10 +191,14 @@ struct UploadStep2View: View {
                     }
                     
                 }
+        .padding(.horizontal, 24)
+        Spacer()
+
+
             }
-            .padding(.horizontal, 24)
             
-            Spacer()
         }
-    }
 }
+                
+    
+

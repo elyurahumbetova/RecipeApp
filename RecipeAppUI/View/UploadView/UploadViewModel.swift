@@ -22,7 +22,6 @@ class UploadViewModel{
     var cookingDuration: Double = 35
     var showAlert = false
     
-    
     var ingredients : [String] = ["",""]
     var showSuccess: Bool = false
     var steps: [String] = [""]
@@ -31,6 +30,13 @@ class UploadViewModel{
     var foodType: FoodType = .food
     private let recipeService = RecipeService()
     private let storageService = StorageService()
+    
+    var foodNameError: String? = nil
+    var descriptionError: String? = nil
+    var ingredientError: Set<Int> = []
+    var stepError: Set<Int> = []
+    
+    private let localization = LocalizedManager.shared
     
     
     func goToStep2(){
@@ -105,15 +111,78 @@ class UploadViewModel{
             return index + 1 
         }
     }
+    
+    @discardableResult
+    func validationStep1() -> Bool{
+        var isValid = true
+        
+        if foodName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            foodNameError = localization.t("This field is required")
+            isValid = false
+        }else{
+            foodNameError = nil
+        }
+        
+        if descriptionText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty{
+            descriptionError = localization.t("This field is required")
+            isValid = false
+        }else{
+            descriptionError = nil
+        }
+        
+        if coverImage == nil {
+            showAlert = true
+            isValid = false
+        }
+        return isValid
+    }
+    
+    @discardableResult
+    func validationStep2() -> Bool{
+        ingredientError.removeAll()
+        stepError.removeAll()
+        
+        for (index,ingredient ) in ingredients.enumerated(){
+            if ingredient.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty{
+                ingredientError.insert(index)
+            }
+        }
+        for (index,step ) in steps.enumerated(){
+            if step.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty{
+                stepError.insert(index)
+            }
+        }
+        
+        return ingredientError.isEmpty && stepError.isEmpty
+
+        
+    }
+    
+    
     @MainActor
     func uploadRecipe() async {
         guard let uid = Auth.auth().currentUser?.uid else {
-            uploadError = "Zəhmət olmasa yenidən daxil olun"
+            uploadError = "Please try again"
             return
         }
 
+        
+        let step1Valid = validationStep1()
+        let step2Valid = validationStep2()
+        guard step1Valid, step2Valid else{
+            uploadError = localization.t("Pleas fill all of the fields")
+            if !step1Valid{
+                currentStep = 1
+            }else{
+                currentStep = 2
+            }
+            return
+        }
+        
+        
+        
         isUploading = true
-        defer { isUploading = false }   // hər halda sıfırlanır
+        defer { isUploading = false }
 
         let cleanIngredients = ingredients.filter { !$0.isEmpty }
         let cleanSteps = steps.filter { !$0.isEmpty }
@@ -139,7 +208,7 @@ class UploadViewModel{
             showSuccess = true
         } catch {
             print("Upload error:", error)
-            uploadError = error.localizedDescription   // İSTİFADƏÇİYƏ GÖSTƏR
+            uploadError = error.localizedDescription
         }
     }
 }

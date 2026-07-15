@@ -15,6 +15,8 @@ struct BottomView: View {
         Group{
             if viewModel.currentStep == 1 {
                 AppButton(title: localization.t("Next"), variant: .primaryFilled, size: .regular) {
+                    guard viewModel.validationStep1() else { return }
+
                     viewModel.goToStep2()
                 }
             }else{
@@ -23,6 +25,8 @@ struct BottomView: View {
                         viewModel.goToStep1()
                     }
                     AppButton(title: localization.t("Next"), variant: .primaryFilled, size: .small) {
+                        guard viewModel.validationStep2() else { return }
+                        
                         Task {
                             await viewModel.uploadRecipe()
                         }
