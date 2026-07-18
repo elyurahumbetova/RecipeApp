@@ -21,6 +21,7 @@ class HomeViewModel{
     func loadData() async{
         
         guard !hasLoaded else {return }
+        hasLoaded = true 
         isLoading = true
 
         recipes = await fetchRecipes()
@@ -54,6 +55,10 @@ class HomeViewModel{
             return [:]
         }
     }
-    
+    func removeRecipe(id: String){
+        recipes.removeAll{
+            $0.id == id
+        }
+    }
    
 }

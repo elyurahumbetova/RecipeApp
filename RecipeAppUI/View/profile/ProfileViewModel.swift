@@ -105,15 +105,37 @@ class ProfileViewModel{
             return
         }
 
+        let previousRecipes = recipes
+        let previousLikedRecipes = likedRecipes
+        
+        recipes.removeAll{
+            $0.id == recipeId
+        }
+        likedRecipes.removeAll{
+            $0.id == recipeId
+        }
+        NotificationCenter.default.post(
+            name: .recipeDeleted,
+            object: recipeId
+        )
+        
+        
         do {
             try await recipeService.deleteRecipe(
                 recipeId: recipeId,
                 uid: uid
             )
 
-            recipes.removeAll { $0.id == recipeId }
-
         } catch {
+            
+            
+            recipes = previousRecipes
+            likedRecipes = previousLikedRecipes
+            
+            NotificationCenter.default.post(
+                name: .recipeDeleteFailed,
+                object: recipeId
+            )
             print(error)
         }
     }

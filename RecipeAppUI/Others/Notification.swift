@@ -6,3 +6,8 @@
 //
 
 import Foundation
+
+extension Notification.Name{
+    static let recipeDeleted = Notification.Name("recipeDeleted")
+    static let recipeDeleteFailed = Notification.Name("recipeDeleteFailed")
+}

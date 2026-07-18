@@ -355,7 +355,9 @@ struct ProfileView: View {
                 recipes: viewModel.recipes,
                 emptyText: localization.t(
                     "No recipes yet"
-                )
+                ),
+                canDelete: true
+                
             )
 
         } else {
@@ -363,14 +365,16 @@ struct ProfileView: View {
                 recipes: viewModel.likedRecipes,
                 emptyText: localization.t(
                     "No liked recipes yet"
-                )
+                ),
+                canDelete: false
             )
         }
     }
     @ViewBuilder
     private func recipeGrid(
         recipes: [RecipeModel],
-        emptyText: String
+        emptyText: String,
+        canDelete: Bool
     ) -> some View {
         if recipes.isEmpty {
             VStack {
@@ -388,30 +392,47 @@ struct ProfileView: View {
                 spacing: 16
             ) {
                 ForEach(recipes) { recipe in
-                    RecipeCardView(recipe: recipe)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            coordinator.push(
-                                .detailView1(recipe)
-                            )
-                        }
-                        .contextMenu {
-                            Button(role: .destructive) {
-                                Task {
-                                    await viewModel.deleteRecipe(
-                                        recipe
-                                    )
-                                }
-                            } label: {
-                                Label(
-                                    localization.t("Delete"),
-                                    systemImage: "trash"
-                                )
-                            }
-                        }
+                  recipeGridItem(
+                    recipe,canDelete: canDelete
+                  )
                 }
             }
             .padding(16)
+        }
+    }
+    
+    @ViewBuilder
+    private func recipeGridItem(_ recipe: RecipeModel,canDelete: Bool) -> some View{
+        if canDelete{
+            RecipeCardView(recipe: recipe)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    coordinator.push(
+                        .detailView1(recipe)
+                    )
+                }
+                .contextMenu {
+                    Button(role: .destructive) {
+                        Task {
+                            await viewModel.deleteRecipe(
+                                recipe
+                            )
+                        }
+                    } label: {
+                        Label(
+                            localization.t("Delete"),
+                            systemImage: "trash"
+                        )
+                    }
+                }
+        }else{
+            RecipeCardView(recipe: recipe)
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    coordinator.push(
+                        .detailView1(recipe)
+                    )
+                }
         }
     }
 }

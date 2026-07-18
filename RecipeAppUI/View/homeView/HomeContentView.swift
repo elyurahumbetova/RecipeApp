@@ -80,6 +80,27 @@ struct HomeContentView: View {
                 await viewModel.refreshRecipe()
             }
         }
+        .onReceive(
+            NotificationCenter.default.publisher(
+                for: .recipeDeleted
+            )
+        ){notification in
+            guard let recipeId = notification.object as? String else {
+                return
+            }
+            withAnimation(.easeInOut(duration: 0.2)){
+                viewModel.removeRecipe(id: recipeId)
+            }
+        }
+        .onReceive(
+            NotificationCenter.default.publisher(
+                for: .recipeDeleteFailed
+            )
+        ) { _ in
+            Task {
+                await viewModel.refreshRecipe()
+            }
+        }
     }
 
 
