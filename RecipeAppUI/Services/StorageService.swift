@@ -14,7 +14,7 @@ struct StorageService {
             throw NSError(domain: "StorageService", code: -1, userInfo: [NSLocalizedDescriptionKey: "Image data conversion failed"])
         }
         
-        let fileName = "\(uid).jpg"
+        let fileName = "profileImages/\(uid)/\(UUID().uuidString).jpg"
         try await supabase.storage
             .from("profiles")
             .upload(fileName, data: imageData, options: .init(upsert: true))

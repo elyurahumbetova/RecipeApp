@@ -8,7 +8,7 @@
 import Foundation
 struct UserModel: Codable{
     let userName: String
-    let profileImage: String
+    var profileImage: String
     enum CodingKeys: String, CodingKey{
         case userName = "username"
         case profileImage

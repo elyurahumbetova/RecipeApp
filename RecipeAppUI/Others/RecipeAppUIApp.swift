@@ -17,11 +17,13 @@ struct RecipeAppUIApp: App {
                 diskPath: "imageCache"
             )
         }
-    
+    @State private var userSession = UserSession()
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+ 
     var body: some Scene {
         WindowGroup {
             RootView()
+                .environment(userSession)
                 
         }
     }

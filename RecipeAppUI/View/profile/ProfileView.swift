@@ -76,8 +76,9 @@ struct ProfileView: View {
 
     @State private var localization = LocalizedManager.shared
 
-    @Environment(NavigatorCoordinator.self)
-    private var coordinator
+    @Environment(NavigatorCoordinator.self) private var coordinator
+
+    @Environment(UserSession.self) private var userSession
 
     private let columns = [
         GridItem(.flexible(), spacing: 16),
@@ -136,6 +137,11 @@ struct ProfileView: View {
             }
             .task {
                 await viewModel.loadInitialData()
+                guard let profile = viewModel.profile else {
+                    return
+                }
+
+                userSession.currentUser = profile
             }
             .onChange(of: selectedTab) { _, newTab in
                 guard newTab == 1 else {
@@ -260,7 +266,7 @@ struct ProfileView: View {
             ZStack {
                 Circle()
                     .fill(.appForm)
-
+                
                 profilePhotoContent
             }
             .clipShape(Circle())
@@ -274,9 +280,15 @@ struct ProfileView: View {
         )
         .onChange(of: selectedItem) { _, newItem in
             Task {
-                await viewModel.handlePhotoSelection(
-                    newItem
-                )
+                guard let image = await viewModel.loadSelectedImage(newItem) else {
+                    return
+                }
+                userSession.updateProfileImage(image: image)
+                
+                guard let url = await viewModel.uploadProfileImage(image)else{
+                    return
+                }
+                userSession.updateProfileImage(image: image, url: url)
             }
         }
     }

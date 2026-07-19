@@ -21,6 +21,7 @@ class ProfileViewModel{
     var profileImageURL = ""
     var selectedImage: UIImage?
     var isLoading = false
+    var profile: UserModel?
     
     private let userService = UserService()
     private let recipeService = RecipeService()
@@ -36,13 +37,23 @@ class ProfileViewModel{
     
     
     func fetchUser() async {
-        guard let uid = Auth.auth().currentUser?.uid else{return }
-        do{
-            let profile = try await userService.fetchProfile(uid: uid)
-            userName = profile.userName
-            email = profile.email
-            profileImageURL = profile.profileImageURL
-        }catch{
+        guard let uid = Auth.auth().currentUser?.uid else {
+            return
+        }
+
+        do {
+            let fetchedProfile = try await userService.fetchProfile(uid: uid)
+
+            profile = UserModel(
+                userName: fetchedProfile.userName,
+                profileImage: fetchedProfile.profileImageURL
+            )
+
+            userName = fetchedProfile.userName
+            email = fetchedProfile.email
+            profileImageURL = fetchedProfile.profileImageURL
+
+        } catch {
             print(error)
         }
     }
@@ -76,26 +87,35 @@ class ProfileViewModel{
         
          
     }
-    func handlePhotoSelection(_ item: PhotosPickerItem?) async{
-        guard let item,
-                let data = try? await item.loadTransferable(type: Data.self),
-                let uiImage = UIImage(data:data) else {return}
-        
-        await MainActor.run{
-            selectedImage = uiImage
+    func loadSelectedImage(_ item: PhotosPickerItem?) async -> UIImage? {
+        guard let item else {
+            return nil
         }
-        await uploadProfileImage(uiImage)
+
+        do {
+            guard let data = try await item.loadTransferable(type: Data.self),
+                  let image = UIImage(data: data) else {
+                return nil
+            }
+
+            selectedImage = image
+            return image
+        } catch {
+            print(error)
+            return nil
+        }
     }
     
-    func uploadProfileImage(_ image: UIImage) async{
-        guard let uid = Auth.auth().currentUser?.uid else{return }
+    func uploadProfileImage(_ image: UIImage) async -> String?{
+        guard let uid = Auth.auth().currentUser?.uid else{return nil}
         do{
             let url = try await storageService.uploadProfileImage(uid: uid, image:image)
             try await userService.updateProfileImage(uid: uid, url: url)
             profileImageURL = url
-            await fetchUser()
+            return url
             } catch {
                 print(error)
+                return nil
             }
         }
     
