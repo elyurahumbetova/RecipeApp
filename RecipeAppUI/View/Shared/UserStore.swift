@@ -9,37 +9,24 @@ import SwiftUI
 
 @MainActor
 @Observable
-
-final class UserSession{
-    
-    @available(*, deprecated, message: "Use users dictionary with id to read profile image with url")
-    var currentProfileImage: UIImage?
+final class UserStore{
     
     private(set) var users: [String: UserModel] = [:]
-    
-    func updateProfile(id: String, producer: (UserModel) -> UserModel) {
-        guard let oldProfile = users[id] else { return }
-        let newProfile = producer(oldProfile)
-        users.updateValue(newProfile, forKey: id)
+   
+    func setProfile(id: String,profile: UserModel ){
+        users[id] = profile
     }
     
-    @available(*, deprecated, message: "use updateProfile method directly")
-    func updateProfileImage(
-        image: UIImage,
-        url: String? = nil
+    
+    func updateProfile(
+        id: String,
+        producer: (UserModel) -> UserModel
     ){
-        updateProfile(id: "5") { profile in
-            return UserModel(
-                userName: profile.userName,
-                profileImage: url ?? ""
-            )
+        guard let oldProfile = users[id] else {
+             return
         }
-        
-        updateProfile(id: "5") { profile in
-            return UserModel(
-                userName: "Elyura",
-                profileImage: profile.profileImage,
-            )
-        }
+        users[id] = producer(oldProfile)
     }
+    
+    
 }

@@ -1,6 +1,7 @@
 import SwiftUI
 import PhotosUI
 import Kingfisher
+import FirebaseAuth
 
 struct StatItem: View {
     let value: Int
@@ -78,7 +79,7 @@ struct ProfileView: View {
 
     @Environment(NavigatorCoordinator.self) private var coordinator
 
-    @Environment(UserSession.self) private var userSession
+    @Environment(UserStore.self) private var userStore
 
     private let columns = [
         GridItem(.flexible(), spacing: 16),
@@ -137,11 +138,18 @@ struct ProfileView: View {
             }
             .task {
                 await viewModel.loadInitialData()
-                guard let profile = viewModel.profile else {
+            
+                
+                guard
+                    let uid = Auth.auth().currentUser?.uid,
+                    let profile = viewModel.profile
+                
+                else {
                     return
                 }
 
-                userSession.currentUser = profile
+                userStore.setProfile(id: uid,profile: profile)
+                
             }
             .onChange(of: selectedTab) { _, newTab in
                 guard newTab == 1 else {
@@ -283,12 +291,21 @@ struct ProfileView: View {
                 guard let image = await viewModel.loadSelectedImage(newItem) else {
                     return
                 }
-                userSession.updateProfileImage(image: image)
                 
                 guard let url = await viewModel.uploadProfileImage(image)else{
                     return
                 }
-                userSession.updateProfileImage(image: image, url: url)
+                
+                guard let uid = Auth.auth().currentUser?.uid else{
+                    return
+                }
+
+                userStore.updateProfile(id: uid) { profile in
+                     UserModel(
+                        userName: profile.userName,
+                        profileImage: url
+                    )
+                }
             }
         }
     }

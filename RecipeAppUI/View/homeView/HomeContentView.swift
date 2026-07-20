@@ -13,7 +13,7 @@ struct HomeContentView: View {
     
     @State private var localization = LocalizedManager.shared
     @Environment(NavigatorCoordinator.self) private var coordinator
-    @Environment(UserSession.self) private var userSession
+    @Environment(UserStore.self) private var userStore
     
     private let categories = [
         "All",
@@ -31,9 +31,7 @@ struct HomeContentView: View {
         
         if selectedCategory != "All" {
             result = result.filter { recipe in
-                recipe.type.rawValue.caseInsensitiveCompare(
-                    selectedCategory
-                ) == .orderedSame
+                recipe.type.rawValue.lowercased() == selectedCategory.lowercased()
             }
         }
         
@@ -259,25 +257,25 @@ struct HomeContentView: View {
         let isCurrentUser = userId == currentUID
         
         
-        let profileImageUrl = userId == currentUID ?
-        userSession.currentUser?.profileImage ?? user?.profileImage ?? ""
-        : user?.profileImage ?? ""
+        let profileImageUrl = isCurrentUser
+            ? userStore.users[userId]?.profileImage 
+            ?? user?.profileImage ?? ""
+            : user?.profileImage ?? ""
         
         let userName = isCurrentUser
-        ? userSession.currentUser?.userName
-        ?? user?.userName
-        ?? localization.t("Unknown")
-        : user?.userName
-        ?? localization.t("Unknown")
+            ? userStore.users[userId]?.userName
+            ?? user?.userName
+            ?? localization.t("Unknown")
+            : user?.userName
+            ?? localization.t("Unknown")
         
         return VStack(
             alignment: .leading,
             spacing: 8
         ) {
             HStack(spacing: 8) {
-                profileImageView(url: profileImageUrl, isCurrentUser: isCurrentUser)
-                    .frame(width: 40,height:40)
-                    .clipShape(Circle())
+                profileImageView(url: profileImageUrl)
+                
                 Text(userName)
                     .font(.p2)
                     .foregroundStyle(.appMainText)
@@ -296,25 +294,17 @@ struct HomeContentView: View {
         @ViewBuilder
         private func profileImageView(
             url: String,
-            isCurrentUser: Bool
         ) -> some View {
-            if isCurrentUser,
-               let localImage = userSession.currentProfileImage {
-                
-                Image(uiImage: localImage)
-                    .resizable()
-                    .scaledToFill()
-                
-            } else {
-                KFImage(URL(string: url))
-                    .placeholder {
-                        Image(systemName: "person.crop.circle.fill")
-                            .resizable()
-                            .foregroundStyle(.appSecondaryText)
-                    }
-                    .resizable()
-                    .scaledToFill()
-            }
+            KFImage(URL(string: url))
+                .placeholder {
+                    Image(systemName: "person.crop.circle.fill")
+                        .resizable()
+                        .foregroundStyle(.appSecondaryText)
+                }
+                .resizable()
+                .scaledToFill()
+                .frame(width: 40,height:40)
+                .clipShape(Circle())
         }
     }
 

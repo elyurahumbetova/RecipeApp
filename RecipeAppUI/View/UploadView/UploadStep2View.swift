@@ -36,6 +36,7 @@ struct UploadStep2View: View {
                     
                 }
                 .padding(.horizontal, 24)
+                
             }
             .scrollDismissesKeyboard(.interactively)
         }

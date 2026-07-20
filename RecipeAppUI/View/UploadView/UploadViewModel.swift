@@ -170,7 +170,7 @@ class UploadViewModel{
         let step1Valid = validationStep1()
         let step2Valid = validationStep2()
         guard step1Valid, step2Valid else{
-            uploadError = localization.t("Pleas fill all of the fields")
+            uploadError = localization.t("Please fill all of the fields")
             if !step1Valid{
                 currentStep = 1
             }else{

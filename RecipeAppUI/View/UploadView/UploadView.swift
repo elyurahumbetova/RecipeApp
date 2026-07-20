@@ -47,14 +47,28 @@ struct UploadView: View {
         }message:{
             Text(localization.t("Pls upload a recipe image before continuing to next step"))
         }
-        .sheet(isPresented: $viewModel.showSuccess){
-            SuccessSheetView{
-                coordinator.setRoot(.home)
-                viewModel.showSuccess = false
+        .overlay{
+            if viewModel.showSuccess{
+                ZStack(alignment: .bottom){
+                    Color.black.opacity(0.2)
+                        .ignoresSafeArea()
+                    SuccessSheetView{
+                        viewModel.showSuccess = false
+                        coordinator.setRoot(.home)
+                    }
+                    .transition(
+                        .move(edge: .bottom)
+                    )
+                    
+                }
+                .ignoresSafeArea()
+                .zIndex(1)
             }
-            .presentationDetents([.medium])
-            .presentationCornerRadius(24)
         }
+        .animation(
+            .spring(response: 0.35, dampingFraction: 0.88 ),
+            value: viewModel.showSuccess
+        )
     }
 }
 #Preview {

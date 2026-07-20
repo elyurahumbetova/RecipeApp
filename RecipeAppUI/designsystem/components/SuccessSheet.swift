@@ -25,12 +25,27 @@ struct SuccessSheetView: View {
                 .foregroundStyle(.appSecondaryText)
                 .font(.p2)
                 .multilineTextAlignment(.center)
+            
             AppButton(title: localization.t("Back to Home"), variant: .primaryFilled, size: .regular) {
                 onDone()
             }
             .padding(.top,24)
         }
         .padding(.horizontal, 24)
+        .padding(.top,20)
+        .padding(.bottom,30)
+        .frame(maxWidth: .infinity)
+        .background(.regularMaterial)
+        .clipShape(
+            UnevenRoundedRectangle(
+                topLeadingRadius: 24,
+                bottomLeadingRadius: 0,
+                bottomTrailingRadius: 0,
+                topTrailingRadius: 24,
+                style: .continuous
+            )
+        )
+        
 
     }
 }

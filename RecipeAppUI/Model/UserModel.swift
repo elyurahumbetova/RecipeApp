@@ -6,7 +6,8 @@
 //
 
 import Foundation
-struct UserModel: Codable{
+
+struct UserModel: Codable, CopyWith {
     let userName: String
     var profileImage: String
     enum CodingKeys: String, CodingKey{
