@@ -35,9 +35,8 @@ struct RecipeCardView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 16))
 
                 Button {
-                    Task {
-                        await toggleLike(recipe: recipe)
-                    }
+                        toggleLike()
+                    
                 } label: {
                     Image(systemName: isLiked ? "heart.fill" : "heart")
                         .foregroundStyle(.white)
@@ -72,6 +71,18 @@ struct RecipeCardView: View {
                 await checkIfLiked()
             }
         }
+        .onReceive(
+            NotificationCenter.default.publisher(
+                for: .recipeLikedChange
+               )
+            ){notification in
+                guard let change = notification.object as? RecipeLikedChange,
+                      
+                        change.recipe.id == recipe.id else {return }
+                
+                isLiked = change.isLiked
+            }
+        
     }
 
     private var placeholderView: some View {
@@ -99,31 +110,61 @@ struct RecipeCardView: View {
         }
     }
 
-    func toggleLike(recipe: RecipeModel) async {
-        guard let uid = Auth.auth().currentUser?.uid else { return }
-        guard let recipeId = recipe.id else { return }
+    @MainActor
+    private func toggleLike() {
+        guard let uid = Auth.auth().currentUser?.uid,
+              let recipeId = recipe.id else {
+            return
+        }
 
-        let docRef = Firestore.firestore()
-            .collection("liked")
-            .document(uid)
+        let previousValue = isLiked
+        let newValue = !isLiked
 
-        if isLiked {
-            try? await docRef.updateData([
-                "recipes": FieldValue.arrayRemove([recipeId])
-            ])
+        isLiked = newValue
+        postLikeChange(isLiked: newValue)
 
-            await MainActor.run {
-                isLiked = false
-            }
+        Task {
+            let docRef = Firestore.firestore()
+                .collection("liked")
+                .document(uid)
 
-        } else {
-            try? await docRef.setData([
-                "recipes": FieldValue.arrayUnion([recipeId])
-            ], merge: true)
+            do {
+                if newValue {
+                    try await docRef.setData(
+                        [
+                            "recipes": FieldValue.arrayUnion(
+                                [recipeId]
+                            )
+                        ],
+                        merge: true
+                    )
+                } else {
+                    try await docRef.updateData(
+                        [
+                            "recipes": FieldValue.arrayRemove(
+                                [recipeId]
+                            )
+                        ]
+                    )
+                }
+            } catch {
+                await MainActor.run {
+                    isLiked = previousValue
+                    postLikeChange(isLiked: previousValue)
+                }
 
-            await MainActor.run {
-                isLiked = true
+                print(error)
             }
         }
+    }
+
+    private func postLikeChange(isLiked: Bool) {
+        NotificationCenter.default.post(
+            name: .recipeLikedChange,
+            object: RecipeLikedChange(
+                recipe: recipe,
+                isLiked: isLiked
+            )
+        )
     }
 }

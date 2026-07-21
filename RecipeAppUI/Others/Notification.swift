@@ -10,4 +10,10 @@ import Foundation
 extension Notification.Name{
     static let recipeDeleted = Notification.Name("recipeDeleted")
     static let recipeDeleteFailed = Notification.Name("recipeDeleteFailed")
+    
+    static let recipeLikedChange = Notification.Name("recipeLikedChange")
+}
+struct RecipeLikedChange {
+    let recipe: RecipeModel
+    let isLiked: Bool
 }

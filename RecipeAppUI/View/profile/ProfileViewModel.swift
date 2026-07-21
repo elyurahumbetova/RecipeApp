@@ -160,4 +160,23 @@ class ProfileViewModel{
         }
     }
     
+    func applyLikeChange(_ change: RecipeLikedChange) {
+        guard let recipeId = change.recipe.id else {
+            return
+        }
+
+        if change.isLiked {
+            let alreadyExists = likedRecipes.contains {
+                $0.id == recipeId
+            }
+
+            if !alreadyExists {
+                likedRecipes.append(change.recipe)
+            }
+        } else {
+            likedRecipes.removeAll {
+                $0.id == recipeId
+            }
+        }
+    }
 }

@@ -169,6 +169,19 @@ struct ProfileView: View {
                     await viewModel.fetchMyRecipes()
                 }
             }
+            .onReceive(
+                NotificationCenter.default.publisher(
+                    for: .recipeLikedChange
+                )
+                
+            ){notification in
+                guard let change = notification.object as? RecipeLikedChange else { return }
+                withAnimation(.easeInOut(duration: 0.24)){
+                    viewModel.applyLikeChange(change)
+                }
+                
+            }
+           
         }
     }
 
