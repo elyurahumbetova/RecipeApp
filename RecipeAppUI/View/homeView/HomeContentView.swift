@@ -106,34 +106,42 @@ struct HomeContentView: View {
     
     
     private func homeScrollView(availableHeight: CGFloat) -> some View {
-        ScrollView {
-            VStack(spacing: 0) {
-                Color.clear
-                    .frame(height: headerHeight)
-                
-                recipeContent
-                    .frame(maxWidth: .infinity)
-                    .frame(
-                        minHeight: availableHeight,
-                        alignment: .top
-                    )
-                
-                Spacer()
-                    .frame(height: 80)
+        ScrollViewReader{proxy in
+            ScrollView {
+                VStack(spacing: 0) {
+                    Color.clear
+                        .frame(height: headerHeight)
+                        .id("top")
+                    
+                    recipeContent
+                        .frame(maxWidth: .infinity)
+                        .frame(
+                            minHeight: availableHeight,
+                            alignment: .top
+                        )
+                    
+                    Spacer()
+                        .frame(height: 80)
+                }
             }
-        }
-        .scrollIndicators(.hidden)
-        .onScrollGeometryChange(for: CGFloat.self) { geometry in
-            max(
-                0,
-                geometry.contentOffset.y
-                + geometry.contentInsets.top
-            )
-        } action: { oldOffset, newOffset in
-            updateHeaderOffset(
-                oldScrollOffset: oldOffset,
-                newScrollOffset: newOffset
-            )
+            .scrollIndicators(.hidden)
+            .onScrollGeometryChange(for: CGFloat.self) { geometry in
+                max(
+                    0,
+                    geometry.contentOffset.y
+                    + geometry.contentInsets.top
+                )
+            } action: { oldOffset, newOffset in
+                updateHeaderOffset(
+                    oldScrollOffset: oldOffset,
+                    newScrollOffset: newOffset
+                )
+            }
+            .onChange(of: selectedCategory){_,_ in
+                    headerOffset = 0
+                    proxy.scrollTo("top",anchor: .top)
+                
+            }
         }
     }
     
