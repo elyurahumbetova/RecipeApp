@@ -59,6 +59,7 @@ struct HomeContentView: View {
                     }
                     .offset(y: headerOffset)
                     .zIndex(10)
+                Spacer()
             }
             .frame(
                 maxWidth: .infinity,

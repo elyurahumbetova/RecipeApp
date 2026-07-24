@@ -114,6 +114,8 @@ struct ProfileView: View {
                         }
                         .offset(y: profileHeaderOffset)
                         .zIndex(10)
+                    
+                    Spacer()
                 }
                 .frame(
                     maxWidth: .infinity,
